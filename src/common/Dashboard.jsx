@@ -73,7 +73,6 @@ function Dashboard() {
         `${envAPI_URL}/${category}?start_date=${startDate}&end_date=${endDate}`
       )
       .then((response) => {
-        console.log("topcategory", response.data);
         setCategoryData(response.data);
       })
       .catch((error) => {
@@ -86,7 +85,9 @@ function Dashboard() {
         `${envAPI_URL}/vendor-performance?start_date=2023-01-01&end_date=2024-12-31`
       )
       .then((response) => {
-        setPerformance(response.data);
+        const jsonResponse = JSON.stringify(response.data);
+        console.log("response",jsonResponse)
+        setPerformance(jsonResponse);
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -147,7 +148,6 @@ function Dashboard() {
   const getBarChartData = () => {
     if (!apiData) return {}; // If API data isn't loaded yet, return empty chart data
 
-    // Ensure the necessary data is available before accessing it
     const { monthlyData, quarterlyData, halfyearlyData, yearlyData } = apiData;
 
     switch (purchase) {
@@ -157,7 +157,7 @@ function Dashboard() {
           datasets: [
             {
               label: "Sales",
-              data: quarterlyData || [0, 0, 0, 0], // Default to empty array if data is missing
+              data: quarterlyData || [0, 0, 0, 0],
               backgroundColor: ["#007bff", "#28a745"],
             },
           ],
@@ -168,7 +168,7 @@ function Dashboard() {
           datasets: [
             {
               label: "Sales",
-              data: halfyearlyData || [0, 0], // Default to empty array if data is missing
+              data: halfyearlyData || [0, 0],
               backgroundColor: ["#007bff", "#28a745"],
             },
           ],
@@ -179,7 +179,7 @@ function Dashboard() {
           datasets: [
             {
               label: "Sales",
-              data: yearlyData || [0], // Default to empty array if data is missing
+              data: yearlyData || [0],
               backgroundColor: ["#007bff"],
             },
           ],
@@ -190,29 +190,26 @@ function Dashboard() {
           datasets: [
             {
               label: "Purchase-Department",
-              data: monthlyData || [0, 0, 0, 0, 0], // Default to empty array if data is missing
+              data: monthlyData || [10, 20, 50, 15, 40],
               backgroundColor: ["#007bff", "#28a745"],
             },
           ],
         };
     }
   };
-
   const barChartOptions = {
     responsive: true,
+    indexAxis: "y", // This is the key change for horizontal bar chart
     plugins: {
       legend: {
         position: "top",
       },
       title: {
         display: true,
-        text: `Sales Data (${
-          purchase.charAt(0).toUpperCase() + purchase.slice(1)
-        })`,
+        text: `Sales Data (${purchase.charAt(0).toUpperCase() + purchase.slice(1)})`,
       },
     },
   };
-
   // const labels = categoryData.map((item) => item.vendor_Name);
   const pieChartData = {
     labels: categoryData.length > 0 
@@ -250,9 +247,8 @@ function Dashboard() {
 
   return (
     <div className="container mt-4">
-      {/* Comparison Sections */}
       <div className="mb-4">
-        <h3>PO Status</h3>
+        <h3>POs</h3>
         <div className="d-flex justify-content-between">
           <div className="card p-3" style={{ width: "33%", height: "147px" }}>
             <h4>PO Status</h4>
