@@ -85,9 +85,7 @@ function Dashboard() {
         `${envAPI_URL}/vendor-performance?start_date=2023-01-01&end_date=2024-12-31`
       )
       .then((response) => {
-        const jsonResponse = JSON.stringify(response.data);
-        console.log("response",jsonResponse)
-        setPerformance(jsonResponse);
+        setPerformance(response.data);
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -114,37 +112,45 @@ function Dashboard() {
   const columns = [
     {
       name: "Vendor Name",
-      selector: (row) => row.VendorName || "t",
+      selector: (row) => row.vendor_Name || "No Vendor Name", // Display vendor name or fallback text
       sortable: true,
+      width:"250px"
     },
     {
-      name: "total_days_delayed",
-      selector: (row) => row.total_days_delayed,
+      name: "Total Days Delayed",
+      selector: (row) => row.total_days_delayed || "N/A", // Display total days delayed or fallback text
       sortable: true,
+      width:"150px"
     },
     {
-      name: "total_purchase_value",
-      selector: (row) => row.total_purchase_value,
+      name: "Total Purchase Value",
+      selector: (row) =>
+        row.total_purchase_value?.toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+        }) || "N/A", // Format value as currency or fallback text
       sortable: true,
+      width:"180px"
     },
     {
-      name: "tender_numbers",
+      name: "Tender Numbers",
       selector: (row) =>
         row.tender_numbers && row.tender_numbers.length > 0
           ? row.tender_numbers.join(", ")
           : "No Tenders",
       sortable: true,
+      width:"180px"
     },
     {
-      name: "po_numbers",
+      name: "PO Numbers",
       selector: (row) =>
         row.po_numbers && row.po_numbers.length > 0
           ? row.po_numbers.join(", ")
-          : "No Tenders",
+          : "No POs",
       sortable: true,
+      width:"150px"
     },
   ];
-  // Update data based on selected time period
   const getBarChartData = () => {
     if (!apiData) return {}; // If API data isn't loaded yet, return empty chart data
 
@@ -191,7 +197,13 @@ function Dashboard() {
             {
               label: "Purchase-Department",
               data: monthlyData || [10, 20, 50, 15, 40],
-              backgroundColor: ["#007bff", "#28a745"],
+              backgroundColor: [
+                "#007bff",
+                "#28a745",
+                "#dc3545",
+                "#ffc107",
+                "#17a2b8",
+              ],
             },
           ],
         };
@@ -206,24 +218,38 @@ function Dashboard() {
       },
       title: {
         display: true,
-        text: `Sales Data (${purchase.charAt(0).toUpperCase() + purchase.slice(1)})`,
+        text: `Sales Data (${
+          purchase.charAt(0).toUpperCase() + purchase.slice(1)
+        })`,
       },
     },
   };
-  // const labels = categoryData.map((item) => item.vendor_Name);
   const pieChartData = {
-    labels: categoryData.length > 0 
-      ? categoryData.map(item => item.vendor_Name) 
-      : ["testa","testB","test C","test D","test E"], 
+    labels:
+      categoryData.length > 0
+        ? categoryData.map(
+            (item) =>
+              item.vendor_Name ||
+              item.Tendor_No ||
+              item.project_Number_Name ||
+              item.line_Item_Desc ||
+              item.Department
+          )
+        : ["test 1", "test 2", "test 3", "test 4", "test 5"],
     datasets: [
       {
         label: "Items",
-        data:[30, 40, 20, 50, 60], 
-        backgroundColor: ["#007bff", "#28a745", "#dc3545", "#ffc107", "#17a2b8"], // 5 distinct colors
+        data: [30, 40, 20, 50, 60],
+        backgroundColor: [
+          "#007bff",
+          "#28a745",
+          "#dc3545",
+          "#ffc107",
+          "#17a2b8",
+        ], // 5 distinct colors
       },
     ],
   };
-  
 
   const pieChartOptions = {
     responsive: true,
@@ -244,7 +270,6 @@ function Dashboard() {
   const handleChartTypeChange = (e) => {
     setSategory(e.target.value);
   };
-
   return (
     <div className="container mt-4">
       <div className="mb-4">
@@ -318,8 +343,6 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      {/* {console.log("TYUYTFGUGGHJ",performance)} */}
-      {/* Pie Chart Section with Date Inputs */}
       <div className="mb-4 d-flex justify-content-between">
         <div className="card p-3" style={{ width: "48%" }}>
           <h3>Purchases-Department</h3>
@@ -337,7 +360,7 @@ function Dashboard() {
           </div>
           <button
             className="btn btn-primary"
-            onClick={()=>purchasesDept()}
+            onClick={() => purchasesDept()}
             style={{ width: "150px" }}
           >
             Apply Filter
@@ -386,13 +409,15 @@ function Dashboard() {
           <Pie data={pieChartData} options={pieChartOptions} />
         </div>
       </div>
-      <DataTable
-        title="Vendors Performance"
-        columns={columns}
-        data={Array.isArray(performance) ? performance : []}
-        pagination
-        highlightOnHover
-      />
+      <div className="card">
+        <DataTable
+          title="Vendors Performance"
+          columns={columns}
+          data={performance || []}
+          pagination
+          highlightOnHover
+        />
+      </div>
     </div>
   );
 }
