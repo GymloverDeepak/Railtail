@@ -12,6 +12,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
 import axios from "axios";
 ChartJS.register(
   CategoryScale,
@@ -20,7 +22,8 @@ ChartJS.register(
   ArcElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ChartDataLabels
 );
 
 function Dashboard() {
@@ -114,13 +117,13 @@ function Dashboard() {
       name: "Vendor Name",
       selector: (row) => row.vendor_Name || "No Vendor Name", // Display vendor name or fallback text
       sortable: true,
-      width:"250px"
+      width: "400px",
     },
     {
       name: "Total Days Delayed",
       selector: (row) => row.total_days_delayed || "N/A", // Display total days delayed or fallback text
       sortable: true,
-      width:"150px"
+      width: "150px",
     },
     {
       name: "Total Purchase Value",
@@ -130,7 +133,7 @@ function Dashboard() {
           currency: "USD",
         }) || "N/A", // Format value as currency or fallback text
       sortable: true,
-      width:"180px"
+      width: "250px",
     },
     {
       name: "Tender Numbers",
@@ -139,7 +142,7 @@ function Dashboard() {
           ? row.tender_numbers.join(", ")
           : "No Tenders",
       sortable: true,
-      width:"180px"
+      width: "250px",
     },
     {
       name: "PO Numbers",
@@ -148,7 +151,7 @@ function Dashboard() {
           ? row.po_numbers.join(", ")
           : "No POs",
       sortable: true,
-      width:"150px"
+      // width: "250px",
     },
   ];
   const getBarChartData = () => {
@@ -198,11 +201,11 @@ function Dashboard() {
               label: "Purchase-Department",
               data: monthlyData || [10, 20, 50, 15, 40],
               backgroundColor: [
-                "#007bff",
-                "#28a745",
-                "#dc3545",
-                "#ffc107",
-                "#17a2b8",
+                "#6A9FB5",
+                "#8CD4B2",
+                "#F28E8E",
+                "#FFF48C",
+                "#C4B9E5",
               ],
             },
           ],
@@ -239,14 +242,14 @@ function Dashboard() {
     datasets: [
       {
         label: "Items",
-        data: [30, 40, 20, 50, 60],
+        data: [50, 50, 50, 50, 50],
         backgroundColor: [
-          "#007bff",
-          "#28a745",
-          "#dc3545",
-          "#ffc107",
-          "#17a2b8",
-        ], // 5 distinct colors
+          "#d2b4de",
+          "#e91e63",
+          "#F28E8E",
+          "#45b39d",
+          "#7f8c8d",
+        ],
       },
     ],
   };
@@ -255,14 +258,42 @@ function Dashboard() {
     responsive: true,
     plugins: {
       legend: {
-        position: "top",
+        display: true, // Show the legend
+        position: "right", // Position legend on the right side
       },
-      title: {
-        display: true,
-        text: ` (${category || ""})`,
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.label || "";
+            const value = context.raw || 0;
+            return `${label.split(" ")[0]}: ${value}`; // Display first word and value in tooltip
+          },
+        },
+      },
+      datalabels: {
+        color: "#fff",
+        font: {
+          size: 10,
+          weight: "bold",
+        },
+        anchor: "center", // Place labels in the center of each segment
+        align: "center", // Align text centrally within the segment
+        formatter: function (value, context) {
+          const label = context.chart.data.labels[context.dataIndex];
+          return label.split(" ")[0]; // Display only the first word of the label
+        },
+        rotation: function (context) {
+          const index = context.dataIndex;
+          const totalSegments = context.chart.data.labels.length;
+          const baseAngle = (index / totalSegments) * 360;
+          return baseAngle; // Rotate labels to align with their segments
+        },
+        clip: true, // Ensure labels stay within the chart
+        padding: 5, // Add padding for better readability
       },
     },
   };
+
   const handleTimePeriodChange = (e) => {
     setPurchase(e.target.value);
   };
@@ -271,142 +302,243 @@ function Dashboard() {
     setSategory(e.target.value);
   };
   return (
-    <div className="container mt-4">
+    <div className="mt-4">
       <div className="mb-4">
         <h3>POs</h3>
         <div className="d-flex justify-content-between">
-          <div className="card p-3" style={{ width: "33%", height: "147px" }}>
-            <h4>PO Status</h4>
-            <div
-              className="d-flex"
-              style={{ borderBottom: "2px solid #ddd", height: "100%" }}
-            >
-              <div className="pr-3" style={{ width: "50%", padding: "10px" }}>
-                <h5>Items</h5>
-                <p>{poStatusData.total_value}</p>
+          <div
+            className="card p-3"
+            style={{
+              width: "33%",
+              height: "120px", // Reduced height
+              backgroundColor: "#f9f9f9",
+              margin: "10px",
+            }}
+          >
+            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>PO Status</h4>
+            <div className="d-flex">
+              <div style={{ width: "50%", padding: "5px" }}>
+                <h5 style={{ fontSize: "12px" }}>Items</h5>
+                <p style={{ fontSize: "10px" }}>{poStatusData.total_value}</p>
               </div>
               <div
                 style={{
                   width: "50%",
-                  borderLeft: "2px solid #ddd",
-                  padding: "10px",
+                  padding: "5px",
+                  borderLeft: "1px solid #ddd",
                 }}
               >
-                <h5>Percentage</h5>
-                <p>{poStatusData.percentage}% of total</p>
+                <h5 style={{ fontSize: "12px" }}>Percentage</h5>
+                <p style={{ fontSize: "10px" }}>
+                  {poStatusData.percentage}% of total
+                </p>
               </div>
             </div>
           </div>
-          <div className="card p-3" style={{ width: "33%", height: "147px" }}>
-            <h4>PO TYPE </h4>
-            <div
-              className="d-flex"
-              style={{ borderBottom: "2px solid #ddd", height: "100%" }}
-            >
-              <div className="pr-3" style={{ width: "50%", padding: "10px" }}>
-                <h5>Items</h5>
-                <p>{poTypeData?.total_value}</p>
+
+          <div
+            className="card p-3"
+            style={{
+              width: "33%",
+              height: "120px", // Reduced height
+              backgroundColor: "#f9f9f9",
+              margin: "10px",
+            }}
+          >
+            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>PO TYPE</h4>
+            <div className="d-flex">
+              <div style={{ width: "50%", padding: "5px" }}>
+                <h5 style={{ fontSize: "12px" }}>Items</h5>
+                <p style={{ fontSize: "10px" }}>{poTypeData?.total_value}</p>
               </div>
               <div
                 style={{
                   width: "50%",
-                  borderLeft: "2px solid #ddd",
-                  padding: "10px",
+                  padding: "5px",
+                  borderLeft: "1px solid #ddd",
                 }}
               >
-                <h5>Percentage</h5>
-                <p>{poTypeData.percentage}% of total</p>
+                <h5 style={{ fontSize: "12px" }}>Percentage</h5>
+                <p style={{ fontSize: "10px" }}>
+                  {poTypeData.percentage}% of total
+                </p>
               </div>
             </div>
           </div>
-          <div className="card p-3" style={{ width: "33%", height: "147px" }}>
-            <h4>Ontime/Delayed POs</h4>
-            <div
-              className="d-flex"
-              style={{ borderBottom: "2px solid #ddd", height: "100%" }}
-            >
-              <div className="pr-3" style={{ width: "50%", padding: "10px" }}>
-                <h5>Items</h5>
-                <p>{analyzePoData.percentage}</p>
+
+          <div
+            className="card p-3"
+            style={{
+              width: "33%",
+              height: "120px", // Reduced height
+              backgroundColor: "#f9f9f9",
+              margin: "10px",
+            }}
+          >
+            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>
+              Ontime POs
+            </h4>
+            <div className="d-flex">
+              <div style={{ width: "50%", padding: "5px" }}>
+                <h5 style={{ fontSize: "12px" }}>Items</h5>
+                <p style={{ fontSize: "10px" }}>{analyzePoData.items}</p>
               </div>
               <div
                 style={{
                   width: "50%",
-                  borderLeft: "2px solid #ddd",
-                  padding: "10px",
+                  padding: "5px",
+                  borderLeft: "1px solid #ddd",
                 }}
               >
-                <h5>Percentage</h5>
-                <p>{analyzePoData.percentage}% of total</p>
+                <h5 style={{ fontSize: "12px" }}>Percentage</h5>
+                <p style={{ fontSize: "10px" }}>
+                  {analyzePoData.percentage}% of total
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="card p-3"
+            style={{
+              width: "33%",
+              height: "120px", // Reduced height
+              backgroundColor: "#f9f9f9",
+              margin: "10px",
+            }}
+          >
+            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>
+              Delayed POs
+            </h4>
+            <div className="d-flex">
+              <div style={{ width: "50%", padding: "5px" }}>
+                <h5 style={{ fontSize: "12px" }}>Items</h5>
+                <p style={{ fontSize: "10px" }}>{analyzePoData.items}</p>
+              </div>
+              <div
+                style={{
+                  width: "50%",
+                  padding: "5px",
+                  borderLeft: "1px solid #ddd",
+                }}
+              >
+                <h5 style={{ fontSize: "12px" }}>Percentage</h5>
+                <p style={{ fontSize: "10px" }}>
+                  {analyzePoData.percentage}% of total
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <div className="mb-4 d-flex justify-content-between">
-        <div className="card p-3" style={{ width: "48%" }}>
+        <div className="card p-3" style={{ width: "48%", height: "500px" }}>
           <h3>Purchases-Department</h3>
-          {/* Date Filter Section */}
-          <div className="mb-2">
-            <select
-              className="form-select"
-              value={purchase}
-              onChange={handleTimePeriodChange}
-            >
-              <option value="monthwise-purchases">Monthly</option>
-              <option value="quarterwise-purchases">Quarterly</option>
-              <option value="yearwise-purchases">Yearly</option>
-            </select>
+          <div className="d-flex align-items-center mb-2">
+  <select
+    className="form-select me-2"
+    value={purchase}
+    onChange={handleTimePeriodChange}
+    style={{ width: "auto" }}
+  >
+    <option value="monthwise-purchases">Monthly</option>
+    <option value="quarterwise-purchases">Quarterly</option>
+    <option value="yearwise-purchases">Yearly</option>
+  </select>
+  <button
+    className="btn btn-primary"
+    onClick={() => purchasesDept()}
+    style={{ width: "150px" }}
+  >
+    Apply Filter
+  </button>
+</div>
+
+          <div style={{ height: "350px", marginTop: "20px" }}>
+            <Bar
+              data={getBarChartData()}
+              options={{
+                ...barChartOptions,
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                  x: {
+                    ticks: {
+                      font: { size: 12 },
+                    },
+                  },
+                  y: {
+                    ticks: {
+                      font: { size: 12 },
+                    },
+                  },
+                },
+              }}
+            />
           </div>
-          <button
-            className="btn btn-primary"
-            onClick={() => purchasesDept()}
-            style={{ width: "150px" }}
-          >
-            Apply Filter
-          </button>
-          <Bar data={getBarChartData()} options={barChartOptions} />
         </div>
-        <div className="card p-3" style={{ width: "48%" }}>
-          <h3>Top 5 category </h3>
-          <div className="mb-1">
-            <label htmlFor="category">Select Category</label>
-            <select
-              id="category"
-              className="form-select mb-2"
-              value={category}
-              onChange={handleChartTypeChange}
-            >
-              <option value="top-vendors">Vendors</option>
-              <option value="top-tenders">Tendors</option>
-              <option value="top-projects">Projects</option>
-              <option value="top-items">items</option>
-              <option value="top-departments">Departments</option>
-            </select>
 
-            <label htmlFor="startDate">Start Date</label>
-            <input
-              type="date"
-              id="startDate"
-              className="form-control mb-2"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-
-            <label htmlFor="endDate">End Date</label>
-            <input
-              type="date"
-              id="endDate"
-              className="form-control mb-2"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-
+        <div className="card p-3" style={{ width: "48%", height: "500px" }}>
+          <h3>Top 5 category</h3>
+          <div>
+            <div className="d-flex align-items-center mb-3">
+              <div className="me-2" style={{ width: "33%" }}>
+                <label htmlFor="category" className="form-label">
+                  Select Category
+                </label>
+                <select
+                  id="category"
+                  className="form-select"
+                  value={category}
+                  onChange={handleChartTypeChange}
+                >
+                  <option value="top-vendors">Vendors</option>
+                  <option value="top-tenders">Tendors</option>
+                  <option value="top-projects">Projects</option>
+                  <option value="top-items">Items</option>
+                  <option value="top-departments">Departments</option>
+                </select>
+              </div>
+              <div className="me-2" style={{ width: "33%" }}>
+                <label htmlFor="startDate" className="form-label">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  id="startDate"
+                  className="form-control"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+              <div style={{ width: "33%" }}>
+                <label htmlFor="endDate" className="form-label">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  id="endDate"
+                  className="form-control"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+            </div>
             <button className="btn btn-primary" onClick={topcategory}>
               Apply Filter
             </button>
           </div>
-          <Pie data={pieChartData} options={pieChartOptions} />
+          <div style={{ height: "400px", marginTop: "20px" }}>
+            <Pie
+              data={pieChartData}
+              plugins={[ChartDataLabels]}
+              options={{
+                ...pieChartOptions,
+                maintainAspectRatio: false,
+              }}
+            />
+          </div>
         </div>
       </div>
       <div className="card">
@@ -415,6 +547,7 @@ function Dashboard() {
           columns={columns}
           data={performance || []}
           pagination
+          paginationPerPage={5} 
           highlightOnHover
         />
       </div>
