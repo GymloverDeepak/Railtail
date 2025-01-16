@@ -162,7 +162,7 @@ function Dashboard() {
     purchaseData.forEach((item) => {
       const { Department, Month, Quarter, Year, line_Item_Value_With_Tax } = item;
   
-      // Define the key based on the provided data (Month, Quarter, or Year)
+      // Define the key based on Month, Quarter, or Year (we'll use Department as label)
       let key;
       if (Month) {
         key = `Month-${Month}`;
@@ -180,71 +180,72 @@ function Dashboard() {
         groupedData[Department][key] = 0;
       }
   
-      // Sum the values based on the key
+      // Sum the values based on the key (Month, Quarter, or Year)
       groupedData[Department][key] += line_Item_Value_With_Tax;
     });
   
     // Labels and datasets
-    let labels = [];
+    let labels = Object.keys(groupedData).slice(0,5); // Show only the first 5 departments
     let datasets = [];
   
+    // Check if 'Month', 'Quarter', or 'Year' is present
     if (purchaseData[0]?.Month) {
       // If Month is provided, show data for months (January to May)
-      labels = ["January", "February", "March", "April", "May"];
       const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#F0E130"];
-      
-      datasets = labels.map((month, i) => ({
-        label: month,
-        data: Object.keys(groupedData).slice(0, 3).map((department) => groupedData[department][`Month-${i + 1}`] || 0),
-        backgroundColor: colors[i],
+  
+      datasets = labels.map((department) => ({
+        label: department,
+        data: ["January", "February", "March", "April", "May"].map((month, i) => groupedData[department][`Month-${i + 1}`] || 0),
+        backgroundColor: colors,
       }));
     } else if (purchaseData[0]?.Quarter) {
       // If Quarter is provided, show data for quarters (Q1 to Q4)
-      labels = ["Q1", "Q2", "Q3", "Q4"];
       const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1"];
-      
-      datasets = labels.map((quarter, i) => ({
-        label: quarter,
-        data: Object.keys(groupedData).slice(0, 3).map((department) => groupedData[department][`Quarter-${i + 1}`] || 0),
-        backgroundColor: colors[i],
+  
+      datasets = labels.map((department) => ({
+        label: department,
+        data: ["Q1", "Q2", "Q3", "Q4"].map((quarter, i) => groupedData[department][`Quarter-${i + 1}`] || 0),
+        backgroundColor: colors,
       }));
     } else if (purchaseData[0]?.Year) {
       // If Year is provided, show data for years
-      labels = ["2021", "2022", "2023", "2024", "2025"];
       const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#F0E130"];
-      
-      datasets = labels.map((year, i) => ({
-        label: year,
-        data: Object.keys(groupedData).slice(0, 3).map((department) => groupedData[department][`Year-${year}`] || 0),
-        backgroundColor: colors[i],
+  
+      datasets = labels.map((department) => ({
+        label: department,
+        data: ["2021", "2022", "2023", "2024", "2025"].map((year) => groupedData[department][`Year-${year}`] || 0),
+        backgroundColor: colors,
       }));
     }
   
     return {
-      labels, // Dynamic labels based on Month, Quarter, or Year
-      datasets, // Dynamic datasets based on data type
+      labels, // Only first 5 departments
+      datasets, // Dynamic datasets based on Month, Quarter, or Year
     };
   };
   
   const barChartOptions = {
     responsive: true,
-    indexAxis: "y",
+    maintainAspectRatio: false, // Allow resizing based on the container
+    indexAxis: "y", // Horizontal bar chart
     plugins: {
       legend: {
         display: false, // Hide the legend
       },
       title: {
         display: true,
-        text: `(${purchase.charAt(0).toUpperCase() + purchase.slice(1)})`,
+        text: `Purchase Performance`,
       },
       tooltip: {
         enabled: true, // Enable tooltips
         callbacks: {
-          // Customize the tooltip to display values only on hover
           label: function(tooltipItem) {
             return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
           },
         },
+      },
+      datalabels: {
+        display: false, // Hide data values inside the bars
       },
     },
     hover: {
@@ -255,6 +256,8 @@ function Dashboard() {
       axis: 'y', // Restricts interaction to the y-axis
     },
   };
+  
+  
    const pieChartData = {
     labels:
       categoryData.length > 0
@@ -437,7 +440,7 @@ function Dashboard() {
                 scales: {
                   x: {
                     ticks: {
-                      font: { size: 12 },
+                      font: { size: 10 },
                     },
                   },
                   y: {
