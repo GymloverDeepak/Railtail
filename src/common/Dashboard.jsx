@@ -33,7 +33,8 @@ function Dashboard() {
   const [timePeriod, setTimePeriod] = useState("monthwise");
   const [category, setSategory] = useState("top-vendors");
   const [apiData, setApiData] = useState([]); // To store API response data
-  const [poTypeData, setPoTypeData] = useState([]);
+  const [standard, setStandard] = useState([]);
+  const [blanket, setBlanket] = useState([]);
   const [analyzeDelay, setAnalyzeDelay] = useState([]);
   const [analyzeOntime, setAnalyzeOntime] = useState([]);
   const [poStatusClose, setPoStatusClose] = useState([]);
@@ -41,12 +42,14 @@ function Dashboard() {
   const [performance, setPerformance] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [purchase, setPurchase] = useState("monthwise-purchases");
+  const [purchaseData, setPurchaseData] = useState([]);
 
   const poType = () => {
     axios
       .get(`${envAPI_URL}/analyze-po-type`)
       .then((response) => {
-        setPoTypeData(response.data.STANDARD); 
+        setStandard(response.data.STANDARD); 
+        setBlanket(response.data.BLANKET_RELEASE); 
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -103,7 +106,7 @@ function Dashboard() {
       .get(`${envAPI_URL}/${purchase}`)
       .then((response) => {
         console.log("purchasesDept", response.data);
-        // (response.data);
+        setPurchaseData(response.data);
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -115,7 +118,8 @@ function Dashboard() {
     poStatus();
     topcategory();
     vendorPerformance();
-  }, []);
+    purchasesDept()
+  }, [category,purchase]);
   const columns = [
     {
       name: "Vendor Name",
@@ -159,78 +163,108 @@ function Dashboard() {
     },
   ];
   const getBarChartData = () => {
-    if (!apiData) return {}; // If API data isn't loaded yet, return empty chart data
-
-    const { monthlyData, quarterlyData, halfyearlyData, yearlyData } = apiData;
-
-    switch (purchase) {
-      case "quarterly":
-        return {
-          labels: ["Q1", "Q2", "Q3", "Q4"],
-          datasets: [
-            {
-              label: "Sales",
-              data: quarterlyData || [0, 0, 0, 0],
-              backgroundColor: ["#007bff", "#28a745"],
-            },
-          ],
-        };
-      case "halfyearly":
-        return {
-          labels: ["H1", "H2"],
-          datasets: [
-            {
-              label: "Sales",
-              data: halfyearlyData || [0, 0],
-              backgroundColor: ["#007bff", "#28a745"],
-            },
-          ],
-        };
-      case "yearly":
-        return {
-          labels: ["2024"],
-          datasets: [
-            {
-              label: "Sales",
-              data: yearlyData || [0],
-              backgroundColor: ["#007bff"],
-            },
-          ],
-        };
-      default:
-        return {
-          labels: ["January", "February", "March", "April", "May"],
-          datasets: [
-            {
-              label: "Purchase-Department",
-              data: monthlyData || [10, 20, 50, 15, 40],
-              backgroundColor: [
-                "#6A9FB5",
-                "#8CD4B2",
-                "#F28E8E",
-                "#FFF48C",
-                "#C4B9E5",
-              ],
-            },
-          ],
-        };
+    if (!purchaseData) return {};
+  
+    // Group data by department
+    const groupedData = {};
+    purchaseData.forEach((item) => {
+      const { Department, Month, Quarter, Year, line_Item_Value_With_Tax } = item;
+  
+      // Define the key based on the provided data (Month, Quarter, or Year)
+      let key;
+      if (Month) {
+        key = `Month-${Month}`;
+      } else if (Quarter) {
+        key = `Quarter-${Quarter}`;
+      } else if (Year) {
+        key = `Year-${Year}`;
+      }
+  
+      // Initialize data for each department
+      if (!groupedData[Department]) {
+        groupedData[Department] = {};
+      }
+      if (!groupedData[Department][key]) {
+        groupedData[Department][key] = 0;
+      }
+  
+      // Sum the values based on the key
+      groupedData[Department][key] += line_Item_Value_With_Tax;
+    });
+  
+    // Labels and datasets
+    let labels = [];
+    let datasets = [];
+  
+    if (purchaseData[0]?.Month) {
+      // If Month is provided, show data for months (January to May)
+      labels = ["January", "February", "March", "April", "May"];
+      const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#F0E130"];
+      
+      datasets = labels.map((month, i) => ({
+        label: month,
+        data: Object.keys(groupedData).slice(0, 3).map((department) => groupedData[department][`Month-${i + 1}`] || 0),
+        backgroundColor: colors[i],
+      }));
+    } else if (purchaseData[0]?.Quarter) {
+      // If Quarter is provided, show data for quarters (Q1 to Q4)
+      labels = ["Q1", "Q2", "Q3", "Q4"];
+      const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1"];
+      
+      datasets = labels.map((quarter, i) => ({
+        label: quarter,
+        data: Object.keys(groupedData).slice(0, 3).map((department) => groupedData[department][`Quarter-${i + 1}`] || 0),
+        backgroundColor: colors[i],
+      }));
+    } else if (purchaseData[0]?.Year) {
+      // If Year is provided, show data for years
+      labels = ["2021", "2022", "2023", "2024", "2025"];
+      const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#F0E130"];
+      
+      datasets = labels.map((year, i) => ({
+        label: year,
+        data: Object.keys(groupedData).slice(0, 3).map((department) => groupedData[department][`Year-${year}`] || 0),
+        backgroundColor: colors[i],
+      }));
     }
+  
+    return {
+      labels, // Dynamic labels based on Month, Quarter, or Year
+      datasets, // Dynamic datasets based on data type
+    };
   };
+  
   const barChartOptions = {
     responsive: true,
     indexAxis: "y",
     plugins: {
       legend: {
-        position: "top",
+        display: false, // Hide the legend
       },
       title: {
         display: true,
-        text: `Sales Data (${
-          purchase.charAt(0).toUpperCase() + purchase.slice(1)
-        })`,
+        text: `(${purchase.charAt(0).toUpperCase() + purchase.slice(1)})`,
+      },
+      tooltip: {
+        enabled: true, // Enable tooltips
+        callbacks: {
+          // Customize the tooltip to display values only on hover
+          label: function(tooltipItem) {
+            return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+          },
+        },
       },
     },
+    hover: {
+      mode: 'nearest', // Show the nearest data point when hovering
+    },
+    interaction: {
+      mode: 'nearest', // Ensures interaction with the nearest point when hovering
+      axis: 'y', // Restricts interaction to the y-axis
+    },
   };
+  
+
   const pieChartData = {
     labels:
       categoryData.length > 0
@@ -241,12 +275,16 @@ function Dashboard() {
               item.project_Number_Name ||
               item.line_Item_Desc ||
               item.Department
-          )
-        : ["test 1", "test 2", "test 3", "test 4", "test 5"],
+          ).slice(0, 5) // Limit to 5 labels for balance
+        : ["test 1", "test 2", "test 3", "test 4", "test 5"], // Fallback labels
+  
     datasets: [
       {
         label: "Items",
-        data: [50, 50, 50, 50, 50],
+        data:
+          categoryData.length > 0
+            ? categoryData.map((item) => item.line_Item_Value_With_Tax || 0) // Use line_Item_Value_With_Tax for each item
+            : [50, 50, 50, 50, 50], // Fallback data if no categoryData
         backgroundColor: [
           "#d2b4de",
           "#e91e63",
@@ -257,12 +295,12 @@ function Dashboard() {
       },
     ],
   };
-
+  
   const pieChartOptions = {
     responsive: true,
     plugins: {
       legend: {
-        display: true, // Show the legend
+        display: true,
         position: "right", // Position legend on the right side
       },
       tooltip: {
@@ -270,33 +308,20 @@ function Dashboard() {
           label: function (context) {
             const label = context.label || "";
             const value = context.raw || 0;
-            return `${label.split(" ")[0]}: ${value}`; // Display first word and value in tooltip
+            const truncatedLabel = label.split(" ")[0].slice(0, 10); // Truncate first word to 10 characters
+            return `${truncatedLabel}: ${value}`; // Display truncated label and value in tooltip
           },
         },
       },
       datalabels: {
-        color: "#fff",
-        font: {
-          size: 10,
-          weight: "bold",
-        },
-        anchor: "center", // Place labels in the center of each segment
-        align: "center", // Align text centrally within the segment
-        formatter: function (value, context) {
-          const label = context.chart.data.labels[context.dataIndex];
-          return label.split(" ")[0]; // Display only the first word of the label
-        },
-        rotation: function (context) {
-          const index = context.dataIndex;
-          const totalSegments = context.chart.data.labels.length;
-          const baseAngle = (index / totalSegments) * 360;
-          return baseAngle; // Rotate labels to align with their segments
-        },
-        clip: true, // Ensure labels stay within the chart
-        padding: 5, // Add padding for better readability
+        display: false, // Disable the display of labels on the pie chart
       },
     },
   };
+  
+  
+  
+  
 
   const handleTimePeriodChange = (e) => {
     setPurchase(e.target.value);
@@ -314,16 +339,16 @@ function Dashboard() {
             className="card p-3"
             style={{
               width: "33%",
-              height: "120px", // Reduced height
+              height: "80px", // Reduced height
               backgroundColor: "#f9f9f9",
               margin: "10px",
             }}
           >
-            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}> BLANKET-RELEASE </h4>
+            {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
             <div className="d-flex">
-              <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px" }}>Total</h5>
-                {/* <p style={{ fontSize: "10px" }}>{poStatusData.total_value}</p> */}
+              <div style={{ width: "50%", padding: "5px" ,textAlign:"center"}}>
+                <h5 style={{ fontSize: "12px" ,textAlign:"center"}}>BLANKET-RELEASE</h5>
+                <p style={{ fontSize: "10px" }}>{blanket.count}</p>
               </div>
               <div
                 style={{
@@ -332,9 +357,36 @@ function Dashboard() {
                   borderLeft: "1px solid #ddd",
                 }}
               >
-                <h5 style={{ fontSize: "12px" }}>Percentage</h5>
-                <p style={{ fontSize: "10px" }}>
-                  {/* {poStatusData.percentage}% of total */}
+                <h5 style={{ fontSize: "12px",textAlign:"center",textAlign:"center" }}>STANDARD</h5>
+                <p style={{ fontSize: "10px",textAlign:"center" }}>{standard?.count}</p>
+              </div>
+            </div>
+          </div>
+          <div
+            className="card p-3 "
+            style={{
+              width: "33%",
+              height: "80px", // Reduced height
+              backgroundColor: "#f9f9f9",
+              margin: "10px",
+            }}
+          >
+            {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>Po Status</h4> */}
+            <div className="d-flex">
+              <div style={{ width: "50%", padding: "5px" }}>
+                <h5 style={{ fontSize: "12px",textAlign:"center" }}>Open</h5>
+                <p style={{ fontSize: "10px",textAlign:"center" }}>{poStatusOpen.count}</p>
+              </div>
+              <div
+                style={{
+                  width: "50%",
+                  padding: "5px",
+                  borderLeft: "1px solid #ddd",
+                }}
+              >
+                <h5 style={{ fontSize: "12px",textAlign:"center" }}>Close</h5>
+                <p style={{ fontSize: "10px",textAlign:"center" }}>
+                  {poStatusClose.count}
                 </p>
               </div>
             </div>
@@ -344,16 +396,18 @@ function Dashboard() {
             className="card p-3"
             style={{
               width: "33%",
-              height: "120px", // Reduced height
+              height: "80px", // Reduced height
               backgroundColor: "#f9f9f9",
               margin: "10px",
             }}
           >
-            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>STANDARD</h4>
+            {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>
+               Analyze POs
+            </h4> */}
             <div className="d-flex">
               <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px" }}>Total</h5>
-                <p style={{ fontSize: "10px" }}>{poTypeData?.total_value}</p>
+                <h5 style={{ fontSize: "12px",textAlign:"center"}}>Ontime  POs</h5>
+                <p style={{ fontSize: "10px",textAlign:"center" }}>{analyzeOntime.count}</p>
               </div>
               <div
                 style={{
@@ -362,102 +416,9 @@ function Dashboard() {
                   borderLeft: "1px solid #ddd",
                 }}
               >
-                <h5 style={{ fontSize: "12px" }}>Percentage</h5>
-                <p style={{ fontSize: "10px" }}>
-                  {poTypeData.percentage}% of total
-                </p>
-              </div>
-            </div>
-          </div>
-          <div
-            className="card p-3"
-            style={{
-              width: "33%",
-              height: "120px", // Reduced height
-              backgroundColor: "#f9f9f9",
-              margin: "10px",
-            }}
-          >
-            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>Po Status</h4>
-            <div className="d-flex">
-              <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px" }}>Open</h5>
-                <p style={{ fontSize: "10px" }}>{poStatusOpen.total_value}</p>
-              </div>
-              <div
-                style={{
-                  width: "50%",
-                  padding: "5px",
-                  borderLeft: "1px solid #ddd",
-                }}
-              >
-                <h5 style={{ fontSize: "12px" }}>Close</h5>
-                <p style={{ fontSize: "10px" }}>
-                  {poStatusClose.total_value}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className="card p-3"
-            style={{
-              width: "33%",
-              height: "120px", // Reduced height
-              backgroundColor: "#f9f9f9",
-              margin: "10px",
-            }}
-          >
-            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>
-              Ontime POs
-            </h4>
-            <div className="d-flex">
-              <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px" }}>Total</h5>
-                <p style={{ fontSize: "10px" }}>{analyzeOntime.total_value}</p>
-              </div>
-              <div
-                style={{
-                  width: "50%",
-                  padding: "5px",
-                  borderLeft: "1px solid #ddd",
-                }}
-              >
-                <h5 style={{ fontSize: "12px" }}>Percentage</h5>
-                <p style={{ fontSize: "10px" }}>
-                  {analyzeOntime.percentage}% of total
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className="card p-3"
-            style={{
-              width: "33%",
-              height: "120px", // Reduced height
-              backgroundColor: "#f9f9f9",
-              margin: "10px",
-            }}
-          >
-            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>
-              Delayed POs
-            </h4>
-            <div className="d-flex">
-              <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px" }}>Total</h5>
-                <p style={{ fontSize: "10px" }}>{analyzeDelay.total_value}</p>
-              </div>
-              <div
-                style={{
-                  width: "50%",
-                  padding: "5px",
-                  borderLeft: "1px solid #ddd",
-                }}
-              >
-                <h5 style={{ fontSize: "12px" }}>Percentage</h5>
-                <p style={{ fontSize: "10px" }}>
-                  {analyzeDelay.percentage}% of total
+                <h5 style={{ fontSize: "12px",textAlign:"center" }}> Delayed POs</h5>
+                <p style={{ fontSize: "10px",textAlign:"center" }}>
+                  {analyzeDelay.count}
                 </p>
               </div>
             </div>
@@ -479,13 +440,12 @@ function Dashboard() {
     <option value="quarterwise-purchases">Quarterly</option>
     <option value="yearwise-purchases">Yearly</option>
   </select>
-  <button
-    className="btn btn-primary"
+  {/* <button
     onClick={() => purchasesDept()}
-    style={{ width: "150px" }}
+    style={{ width: "150px", backgroundColor: "#83dfe9" }}
   >
     Apply Filter
-  </button>
+  </button> */}
 </div>
 
           <div style={{ height: "350px", marginTop: "20px" }}>
@@ -513,12 +473,12 @@ function Dashboard() {
         </div>
 
         <div className="card p-3" style={{ width: "48%", height: "500px" }}>
-          <h3>Top 5 category</h3>
+          <h3>Top 5 </h3>
           <div>
             <div className="d-flex align-items-center mb-3">
               <div className="me-2" style={{ width: "33%" }}>
                 <label htmlFor="category" className="form-label">
-                  Select Category
+                  {/* Select Category */} .
                 </label>
                 <select
                   id="category"
@@ -558,9 +518,9 @@ function Dashboard() {
                 />
               </div>
             </div>
-            <button className="btn btn-primary" onClick={topcategory}>
+            {/* <button style={{backgroundColor: "#83dfe9"}} onClick={topcategory}>
               Apply Filter
-            </button>
+            </button> */}
           </div>
           <div style={{ height: "400px", marginTop: "20px" }}>
             <Pie
