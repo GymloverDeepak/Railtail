@@ -96,6 +96,7 @@ function Dashboard() {
       )
       .then((response) => {
         setPerformance(response.data);
+        console.log("response.data",response.data)
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -105,7 +106,6 @@ function Dashboard() {
     axios
       .get(`${envAPI_URL}/${purchase}`)
       .then((response) => {
-        console.log("purchasesDept", response.data);
         setPurchaseData(response.data);
       })
       .catch((error) => {
@@ -123,43 +123,35 @@ function Dashboard() {
   const columns = [
     {
       name: "Vendor Name",
-      selector: (row) => row.vendor_Name || "No Vendor Name", // Display vendor name or fallback text
+      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
       sortable: true,
-      width: "400px",
+      width: "350px",
     },
     {
       name: "Total Days Delayed",
-      selector: (row) => row.total_days_delayed || "N/A", // Display total days delayed or fallback text
+      selector: (row) => row.days_delayed || "N/A",
       sortable: true,
-      width: "150px",
+      width: "150px"
     },
     {
       name: "Total Purchase Value",
       selector: (row) =>
-        row.total_purchase_value?.toLocaleString("en-US", {
+        row.purchase_value?.toLocaleString("en-US", {
           style: "currency",
           currency: "USD",
-        }) || "N/A", // Format value as currency or fallback text
+        }) || "N/A", 
       sortable: true,
-      width: "250px",
     },
     {
       name: "Tender Numbers",
-      selector: (row) =>
-        row.tender_numbers && row.tender_numbers.length > 0
-          ? row.tender_numbers.join(", ")
-          : "No Tenders",
+      selector: (row) => row.tender_number || "N/A",
       sortable: true,
-      width: "250px",
+      width: "400px"
     },
     {
       name: "PO Numbers",
-      selector: (row) =>
-        row.po_numbers && row.po_numbers.length > 0
-          ? row.po_numbers.join(", ")
-          : "No POs",
+      selector: (row) => row.po_number || "N/A",
       sortable: true,
-      // width: "250px",
     },
   ];
   const getBarChartData = () => {
@@ -263,9 +255,7 @@ function Dashboard() {
       axis: 'y', // Restricts interaction to the y-axis
     },
   };
-  
-
-  const pieChartData = {
+   const pieChartData = {
     labels:
       categoryData.length > 0
         ? categoryData.map(
@@ -318,11 +308,6 @@ function Dashboard() {
       },
     },
   };
-  
-  
-  
-  
-
   const handleTimePeriodChange = (e) => {
     setPurchase(e.target.value);
   };
@@ -333,7 +318,7 @@ function Dashboard() {
   return (
     <div className="mt-4">
       <div className="mb-4">
-        <h3>POs</h3>
+        {/* <h3>POs</h3> */}
         <div className="d-flex justify-content-between">
           <div
             className="card p-3"
@@ -440,12 +425,6 @@ function Dashboard() {
     <option value="quarterwise-purchases">Quarterly</option>
     <option value="yearwise-purchases">Yearly</option>
   </select>
-  {/* <button
-    onClick={() => purchasesDept()}
-    style={{ width: "150px", backgroundColor: "#83dfe9" }}
-  >
-    Apply Filter
-  </button> */}
 </div>
 
           <div style={{ height: "350px", marginTop: "20px" }}>
@@ -473,12 +452,12 @@ function Dashboard() {
         </div>
 
         <div className="card p-3" style={{ width: "48%", height: "500px" }}>
-          <h3>Top 5 </h3>
+          {/* <h3></h3> */}
           <div>
             <div className="d-flex align-items-center mb-3">
               <div className="me-2" style={{ width: "33%" }}>
                 <label htmlFor="category" className="form-label">
-                  {/* Select Category */} .
+                Top 5 
                 </label>
                 <select
                   id="category"
@@ -518,9 +497,6 @@ function Dashboard() {
                 />
               </div>
             </div>
-            {/* <button style={{backgroundColor: "#83dfe9"}} onClick={topcategory}>
-              Apply Filter
-            </button> */}
           </div>
           <div style={{ height: "400px", marginTop: "20px" }}>
             <Pie
