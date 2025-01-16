@@ -34,8 +34,10 @@ function Dashboard() {
   const [category, setSategory] = useState("top-vendors");
   const [apiData, setApiData] = useState([]); // To store API response data
   const [poTypeData, setPoTypeData] = useState([]);
-  const [analyzePoData, setAnalyzePoData] = useState([]);
-  const [poStatusData, setPoStatusData] = useState([]);
+  const [analyzeDelay, setAnalyzeDelay] = useState([]);
+  const [analyzeOntime, setAnalyzeOntime] = useState([]);
+  const [poStatusClose, setPoStatusClose] = useState([]);
+  const [poStatusOpen, setPoStatusOpen] = useState([]);
   const [performance, setPerformance] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [purchase, setPurchase] = useState("monthwise-purchases");
@@ -44,7 +46,7 @@ function Dashboard() {
     axios
       .get(`${envAPI_URL}/analyze-po-type`)
       .then((response) => {
-        setPoTypeData(response.data.STANDARD); // Assuming the data is in the response.data
+        setPoTypeData(response.data.STANDARD); 
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -54,7 +56,8 @@ function Dashboard() {
     axios
       .get(`${envAPI_URL}/analyze-po`)
       .then((response) => {
-        setAnalyzePoData(response.data.delayed); // Assuming the data is in the response.data
+        setAnalyzeDelay(response.data.delayed)
+        setAnalyzeOntime(response.data.ontime); 
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -64,7 +67,8 @@ function Dashboard() {
     axios
       .get(`${envAPI_URL}/analyze-po-status`)
       .then((response) => {
-        setPoStatusData(response.data.OPEN); // Assuming the data is in the response.data
+        setPoStatusOpen(response.data.OPEN);
+        setPoStatusClose(response.data.CLOSE);
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -214,7 +218,7 @@ function Dashboard() {
   };
   const barChartOptions = {
     responsive: true,
-    indexAxis: "y", // This is the key change for horizontal bar chart
+    indexAxis: "y",
     plugins: {
       legend: {
         position: "top",
@@ -315,11 +319,11 @@ function Dashboard() {
               margin: "10px",
             }}
           >
-            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>PO Status</h4>
+            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}> BLANKET-RELEASE </h4>
             <div className="d-flex">
               <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px" }}>Items</h5>
-                <p style={{ fontSize: "10px" }}>{poStatusData.total_value}</p>
+                <h5 style={{ fontSize: "12px" }}>Total</h5>
+                {/* <p style={{ fontSize: "10px" }}>{poStatusData.total_value}</p> */}
               </div>
               <div
                 style={{
@@ -330,7 +334,7 @@ function Dashboard() {
               >
                 <h5 style={{ fontSize: "12px" }}>Percentage</h5>
                 <p style={{ fontSize: "10px" }}>
-                  {poStatusData.percentage}% of total
+                  {/* {poStatusData.percentage}% of total */}
                 </p>
               </div>
             </div>
@@ -345,10 +349,10 @@ function Dashboard() {
               margin: "10px",
             }}
           >
-            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>PO TYPE</h4>
+            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>STANDARD</h4>
             <div className="d-flex">
               <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px" }}>Items</h5>
+                <h5 style={{ fontSize: "12px" }}>Total</h5>
                 <p style={{ fontSize: "10px" }}>{poTypeData?.total_value}</p>
               </div>
               <div
@@ -361,6 +365,35 @@ function Dashboard() {
                 <h5 style={{ fontSize: "12px" }}>Percentage</h5>
                 <p style={{ fontSize: "10px" }}>
                   {poTypeData.percentage}% of total
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            className="card p-3"
+            style={{
+              width: "33%",
+              height: "120px", // Reduced height
+              backgroundColor: "#f9f9f9",
+              margin: "10px",
+            }}
+          >
+            <h4 style={{ fontSize: "14px", marginBottom: "6px" }}>Po Status</h4>
+            <div className="d-flex">
+              <div style={{ width: "50%", padding: "5px" }}>
+                <h5 style={{ fontSize: "12px" }}>Open</h5>
+                <p style={{ fontSize: "10px" }}>{poStatusOpen.total_value}</p>
+              </div>
+              <div
+                style={{
+                  width: "50%",
+                  padding: "5px",
+                  borderLeft: "1px solid #ddd",
+                }}
+              >
+                <h5 style={{ fontSize: "12px" }}>Close</h5>
+                <p style={{ fontSize: "10px" }}>
+                  {poStatusClose.total_value}
                 </p>
               </div>
             </div>
@@ -380,8 +413,8 @@ function Dashboard() {
             </h4>
             <div className="d-flex">
               <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px" }}>Items</h5>
-                <p style={{ fontSize: "10px" }}>{analyzePoData.items}</p>
+                <h5 style={{ fontSize: "12px" }}>Total</h5>
+                <p style={{ fontSize: "10px" }}>{analyzeOntime.total_value}</p>
               </div>
               <div
                 style={{
@@ -392,7 +425,7 @@ function Dashboard() {
               >
                 <h5 style={{ fontSize: "12px" }}>Percentage</h5>
                 <p style={{ fontSize: "10px" }}>
-                  {analyzePoData.percentage}% of total
+                  {analyzeOntime.percentage}% of total
                 </p>
               </div>
             </div>
@@ -412,8 +445,8 @@ function Dashboard() {
             </h4>
             <div className="d-flex">
               <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px" }}>Items</h5>
-                <p style={{ fontSize: "10px" }}>{analyzePoData.items}</p>
+                <h5 style={{ fontSize: "12px" }}>Total</h5>
+                <p style={{ fontSize: "10px" }}>{analyzeDelay.total_value}</p>
               </div>
               <div
                 style={{
@@ -424,7 +457,7 @@ function Dashboard() {
               >
                 <h5 style={{ fontSize: "12px" }}>Percentage</h5>
                 <p style={{ fontSize: "10px" }}>
-                  {analyzePoData.percentage}% of total
+                  {analyzeDelay.percentage}% of total
                 </p>
               </div>
             </div>
