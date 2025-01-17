@@ -26,13 +26,9 @@ ChartJS.register(
   ChartDataLabels
 );
 
-function Dashboard() {
+function Dashboard({startDate,endDate}) {
   const envAPI_URL = import.meta.env.VITE_API_URL;
-  const [startDate, setStartDate] = useState("2023-01-01");
-  const [endDate, setEndDate] = useState("2024-12-31");
-  const [timePeriod, setTimePeriod] = useState("monthwise");
   const [category, setSategory] = useState("top-vendors");
-  const [apiData, setApiData] = useState([]); // To store API response data
   const [standard, setStandard] = useState([]);
   const [blanket, setBlanket] = useState([]);
   const [analyzeDelay, setAnalyzeDelay] = useState([]);
@@ -48,8 +44,8 @@ function Dashboard() {
     axios
       .get(`${envAPI_URL}/analyze-po-type`)
       .then((response) => {
-        setStandard(response.data.STANDARD); 
-        setBlanket(response.data.BLANKET_RELEASE); 
+        setStandard(response.data.STANDARD);
+        setBlanket(response.data.BLANKET_RELEASE);
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -59,8 +55,8 @@ function Dashboard() {
     axios
       .get(`${envAPI_URL}/analyze-po`)
       .then((response) => {
-        setAnalyzeDelay(response.data.delayed)
-        setAnalyzeOntime(response.data.ontime); 
+        setAnalyzeDelay(response.data.delayed);
+        setAnalyzeOntime(response.data.ontime);
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -96,7 +92,6 @@ function Dashboard() {
       )
       .then((response) => {
         setPerformance(response.data);
-        console.log("response.data",response.data)
       })
       .catch((error) => {
         console.error("Error fetching data", error);
@@ -118,8 +113,8 @@ function Dashboard() {
     poStatus();
     topcategory();
     vendorPerformance();
-    purchasesDept()
-  }, [category,purchase]);
+    purchasesDept();
+  }, [category, purchase]);
   const columns = [
     {
       name: "Vendor Name",
@@ -131,7 +126,7 @@ function Dashboard() {
       name: "Total Days Delayed",
       selector: (row) => row.days_delayed || "N/A",
       sortable: true,
-      width: "150px"
+      width: "150px",
     },
     {
       name: "Total Purchase Value",
@@ -139,14 +134,14 @@ function Dashboard() {
         row.purchase_value?.toLocaleString("en-US", {
           style: "currency",
           currency: "USD",
-        }) || "N/A", 
+        }) || "N/A",
       sortable: true,
     },
     {
       name: "Tender Numbers",
       selector: (row) => row.tender_number || "N/A",
       sortable: true,
-      width: "400px"
+      width: "400px",
     },
     {
       name: "PO Numbers",
@@ -154,123 +149,97 @@ function Dashboard() {
       sortable: true,
     },
   ];
-  const getBarChartData = () => {
+  const getBarChartData = (filterType, filterValue) => {
     if (!purchaseData) return {};
-  
-    // Group data by department
     const groupedData = {};
     purchaseData.forEach((item) => {
-      const { Department, Month, Quarter, Year, line_Item_Value_With_Tax } = item;
-  
-      // Define the key based on Month, Quarter, or Year (we'll use Department as label)
-      let key;
-      if (Month) {
-        key = `Month-${Month}`;
-      } else if (Quarter) {
-        key = `Quarter-${Quarter}`;
-      } else if (Year) {
-        key = `Year-${Year}`;
+      const { Department, Month, Quarter, Year, line_Item_Value_With_Tax } =
+        item;
+      if (
+        (filterType === 4 && Month !== filterValue) ||
+        (filterType === 2 && Quarter !== filterValue) ||
+        (filterType === 2024 && Year !== filterValue)
+      ) {
+        return; 
       }
-  
-      // Initialize data for each department
+
       if (!groupedData[Department]) {
-        groupedData[Department] = {};
+        groupedData[Department] = 0;
       }
-      if (!groupedData[Department][key]) {
-        groupedData[Department][key] = 0;
-      }
-  
-      // Sum the values based on the key (Month, Quarter, or Year)
-      groupedData[Department][key] += line_Item_Value_With_Tax;
+      groupedData[Department] += line_Item_Value_With_Tax;
     });
-  
-    // Labels and datasets
-    let labels = Object.keys(groupedData).slice(0,5); // Show only the first 5 departments
-    let datasets = [];
-  
-    // Check if 'Month', 'Quarter', or 'Year' is present
-    if (purchaseData[0]?.Month) {
-      // If Month is provided, show data for months (January to May)
-      const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#F0E130"];
-  
-      datasets = labels.map((department) => ({
-        label: department,
-        data: ["January", "February", "March", "April", "May"].map((month, i) => groupedData[department][`Month-${i + 1}`] || 0),
-        backgroundColor: colors,
-      }));
-    } else if (purchaseData[0]?.Quarter) {
-      // If Quarter is provided, show data for quarters (Q1 to Q4)
-      const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1"];
-  
-      datasets = labels.map((department) => ({
-        label: department,
-        data: ["Q1", "Q2", "Q3", "Q4"].map((quarter, i) => groupedData[department][`Quarter-${i + 1}`] || 0),
-        backgroundColor: colors,
-      }));
-    } else if (purchaseData[0]?.Year) {
-      // If Year is provided, show data for years
-      const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#F0E130"];
-  
-      datasets = labels.map((department) => ({
-        label: department,
-        data: ["2021", "2022", "2023", "2024", "2025"].map((year) => groupedData[department][`Year-${year}`] || 0),
-        backgroundColor: colors,
-      }));
-    }
-  
+
+    const sortedDepartments = Object.entries(groupedData)
+      .sort((a, b) => b[1] - a[1]) 
+      .slice(0, 15); 
+
+    const labels = sortedDepartments.map(([department]) => department);
+    const data = sortedDepartments.map(([, value]) => value); 
+
+    const colors = labels.map(() => "#1976D2"); 
+
     return {
-      labels, // Only first 5 departments
-      datasets, // Dynamic datasets based on Month, Quarter, or Year
+      labels,
+      datasets: [
+        {
+          label: `Purchase Value (${filterType}-${filterValue})`,
+          data,
+          backgroundColor: colors,
+        },
+      ],
     };
   };
-  
   const barChartOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Allow resizing based on the container
+    maintainAspectRatio: false, // Allow resizing based on container
     indexAxis: "y", // Horizontal bar chart
     plugins: {
       legend: {
-        display: false, // Hide the legend
+        display: false, // Hide legend
       },
       title: {
         display: true,
-        text: `Purchase Performance`,
+        text: ``, // Title reflects filtered data
       },
       tooltip: {
         enabled: true, // Enable tooltips
         callbacks: {
-          label: function(tooltipItem) {
-            return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+          label: function (tooltipItem) {
+            return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`; // Tooltip displays department value
           },
         },
       },
       datalabels: {
-        display: false, // Hide data values inside the bars
+        display: true, // Show data values on bars
+        color: "#fff", // Text color
+        anchor: "end", // Position at the end of the bar
+        align: "right", // Align text
+        formatter: (value) => value.toLocaleString(), // Format numbers
       },
     },
     hover: {
-      mode: 'nearest', // Show the nearest data point when hovering
+      mode: "nearest", // Interaction mode
     },
     interaction: {
-      mode: 'nearest', // Ensures interaction with the nearest point when hovering
-      axis: 'y', // Restricts interaction to the y-axis
+      mode: "nearest", // Ensure nearest point interaction
+      axis: "y", // Restrict interaction to y-axis
     },
   };
-  
-  
-   const pieChartData = {
+  const pieChartData = {
     labels:
       categoryData.length > 0
-        ? categoryData.map(
-            (item) =>
-              item.vendor_Name ||
-              item.Tendor_No ||
-              item.project_Number_Name ||
-              item.line_Item_Desc ||
-              item.Department
-          ).slice(0, 5) // Limit to 5 labels for balance
+        ? categoryData
+            .map(
+              (item) =>
+                item.vendor_Name ||
+                item.Tendor_No ||
+                item.project_Number_Name ||
+                item.line_Item_Desc ||
+                item.Department
+            )
+            .slice(0, 5) // Limit to 5 labels for balance
         : ["test 1", "test 2", "test 3", "test 4", "test 5"], // Fallback labels
-  
+
     datasets: [
       {
         label: "Items",
@@ -279,35 +248,35 @@ function Dashboard() {
             ? categoryData.map((item) => item.line_Item_Value_With_Tax || 0) // Use line_Item_Value_With_Tax for each item
             : [50, 50, 50, 50, 50], // Fallback data if no categoryData
         backgroundColor: [
-          "#d2b4de",
-          "#e91e63",
-          "#F28E8E",
-          "#45b39d",
-          "#7f8c8d",
+          "#87CEEB",
+          "#ADD8E6",
+          "#B0E0E6",
+          "#B0C4DE",
+          "#E0FFFF",
         ],
       },
     ],
   };
-  
+
   const pieChartOptions = {
     responsive: true,
     plugins: {
       legend: {
         display: true,
-        position: "right", // Position legend on the right side
+        position: "right",
       },
       tooltip: {
         callbacks: {
           label: function (context) {
             const label = context.label || "";
             const value = context.raw || 0;
-            const truncatedLabel = label.split(" ")[0].slice(0, 10); // Truncate first word to 10 characters
-            return `${truncatedLabel}: ${value}`; // Display truncated label and value in tooltip
+            const truncatedLabel = label.split(" ")[0].slice(0, 10);
+            return `${truncatedLabel}: ${value}`; 
           },
         },
       },
       datalabels: {
-        display: false, // Disable the display of labels on the pie chart
+        display: false, 
       },
     },
   };
@@ -322,7 +291,7 @@ function Dashboard() {
     <div className="mt-4">
       <div className="mb-4">
         {/* <h3>POs</h3> */}
-        <div className="d-flex justify-content-between">
+        <div className="d-flex">
           <div
             className="card p-3"
             style={{
@@ -334,8 +303,12 @@ function Dashboard() {
           >
             {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
             <div className="d-flex">
-              <div style={{ width: "50%", padding: "5px" ,textAlign:"center"}}>
-                <h5 style={{ fontSize: "12px" ,textAlign:"center"}}>BLANKET-RELEASE</h5>
+              <div
+                style={{ width: "50%", padding: "5px", textAlign: "center" }}
+              >
+                <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                  BLANKET-RELEASE POs
+                </h5>
                 <p style={{ fontSize: "10px" }}>{blanket.count}</p>
               </div>
               <div
@@ -345,8 +318,18 @@ function Dashboard() {
                   borderLeft: "1px solid #ddd",
                 }}
               >
-                <h5 style={{ fontSize: "12px",textAlign:"center",textAlign:"center" }}>STANDARD</h5>
-                <p style={{ fontSize: "10px",textAlign:"center" }}>{standard?.count}</p>
+                <h5
+                  style={{
+                    fontSize: "12px",
+                    textAlign: "center",
+                    textAlign: "center",
+                  }}
+                >
+                  STANDARD POs
+                </h5>
+                <p style={{ fontSize: "10px", textAlign: "center" }}>
+                  {standard?.count}
+                </p>
               </div>
             </div>
           </div>
@@ -362,8 +345,12 @@ function Dashboard() {
             {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>Po Status</h4> */}
             <div className="d-flex">
               <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px",textAlign:"center" }}>Open</h5>
-                <p style={{ fontSize: "10px",textAlign:"center" }}>{poStatusOpen.count}</p>
+                <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                  Open POs
+                </h5>
+                <p style={{ fontSize: "10px", textAlign: "center" }}>
+                  {poStatusOpen.count}
+                </p>
               </div>
               <div
                 style={{
@@ -372,8 +359,10 @@ function Dashboard() {
                   borderLeft: "1px solid #ddd",
                 }}
               >
-                <h5 style={{ fontSize: "12px",textAlign:"center" }}>Close</h5>
-                <p style={{ fontSize: "10px",textAlign:"center" }}>
+                <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                  Close POs
+                </h5>
+                <p style={{ fontSize: "10px", textAlign: "center" }}>
                   {poStatusClose.count}
                 </p>
               </div>
@@ -394,8 +383,12 @@ function Dashboard() {
             </h4> */}
             <div className="d-flex">
               <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px",textAlign:"center"}}>Ontime  POs</h5>
-                <p style={{ fontSize: "10px",textAlign:"center" }}>{analyzeOntime.count}</p>
+                <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                  Ontime POs
+                </h5>
+                <p style={{ fontSize: "10px", textAlign: "center" }}>
+                  {analyzeOntime.count}
+                </p>
               </div>
               <div
                 style={{
@@ -404,8 +397,11 @@ function Dashboard() {
                   borderLeft: "1px solid #ddd",
                 }}
               >
-                <h5 style={{ fontSize: "12px",textAlign:"center" }}> Delayed POs</h5>
-                <p style={{ fontSize: "10px",textAlign:"center" }}>
+                <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                  {" "}
+                  Delayed POs
+                </h5>
+                <p style={{ fontSize: "10px", textAlign: "center" }}>
                   {analyzeDelay.count}
                 </p>
               </div>
@@ -414,21 +410,23 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="mb-4 d-flex justify-content-between">
-        <div className="card p-3" style={{ width: "48%", height: "500px" }}>
-          <h3>Purchases-Department</h3>
+      <div className="mb-4 d-flex ">
+        <div className="card p-3" style={{ width: "50%", height: "500px" }}>
+          <h3 style={{ fontSize: "20px", color: "#012970" }}>
+            Purchases By Department
+          </h3>
           <div className="d-flex align-items-center mb-2">
-  <select
-    className="form-select me-2"
-    value={purchase}
-    onChange={handleTimePeriodChange}
-    style={{ width: "auto" }}
-  >
-    <option value="monthwise-purchases">Monthly</option>
-    <option value="quarterwise-purchases">Quarterly</option>
-    <option value="yearwise-purchases">Yearly</option>
-  </select>
-</div>
+            <select
+              className="form-select me-2"
+              value={purchase}
+              onChange={handleTimePeriodChange}
+              style={{ width: "auto" }}
+            >
+              <option value="monthwise-purchases">Monthly</option>
+              <option value="quarterwise-purchases">Quarterly</option>
+              <option value="yearwise-purchases">Yearly</option>
+            </select>
+          </div>
 
           <div style={{ height: "350px", marginTop: "20px" }}>
             <Bar
@@ -453,14 +451,17 @@ function Dashboard() {
             />
           </div>
         </div>
-
-        <div className="card p-3" style={{ width: "48%", height: "500px" }}>
+        <div className="card p-3" style={{ width: "50%", height: "500px" }}>
           {/* <h3></h3> */}
           <div>
             <div className="d-flex align-items-center mb-3">
               <div className="me-2" style={{ width: "33%" }}>
-                <label htmlFor="category" className="form-label">
-                Top 5 
+                <label
+                  htmlFor="category"
+                  className="form-label"
+                  style={{ fontSize: "20px", color: "#012970" }}
+                >
+                  Top 5 Analysis
                 </label>
                 <select
                   id="category"
@@ -469,35 +470,11 @@ function Dashboard() {
                   onChange={handleChartTypeChange}
                 >
                   <option value="top-vendors">Vendors</option>
-                  <option value="top-tenders">Tendors</option>
+                  <option value="top-tenders">Tenders</option>
                   <option value="top-projects">Projects</option>
                   <option value="top-items">Items</option>
                   <option value="top-departments">Departments</option>
                 </select>
-              </div>
-              <div className="me-2" style={{ width: "33%" }}>
-                <label htmlFor="startDate" className="form-label">
-                  Start Date
-                </label>
-                <input
-                  type="date"
-                  id="startDate"
-                  className="form-control"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </div>
-              <div style={{ width: "33%" }}>
-                <label htmlFor="endDate" className="form-label">
-                  End Date
-                </label>
-                <input
-                  type="date"
-                  id="endDate"
-                  className="form-control"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
               </div>
             </div>
           </div>
@@ -519,7 +496,7 @@ function Dashboard() {
           columns={columns}
           data={performance || []}
           pagination
-          paginationPerPage={5} 
+          paginationPerPage={5}
           highlightOnHover
         />
       </div>
