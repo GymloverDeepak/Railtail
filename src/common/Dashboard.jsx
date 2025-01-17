@@ -31,18 +31,18 @@ function Dashboard({startDate,endDate}) {
   const [category, setSategory] = useState("top-vendors");
   const [standard, setStandard] = useState([]);
   const [blanket, setBlanket] = useState([]);
+  const [noData, setNoData] = useState([]);
   const [analyzeDelay, setAnalyzeDelay] = useState([]);
   const [analyzeOntime, setAnalyzeOntime] = useState([]);
   const [poStatusClose, setPoStatusClose] = useState([]);
   const [poStatusOpen, setPoStatusOpen] = useState([]);
   const [performance, setPerformance] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
-  const [purchase, setPurchase] = useState("monthwise-purchases");
   const [purchaseData, setPurchaseData] = useState([]);
 
   const poType = () => {
     axios
-      .get(`${envAPI_URL}/analyze-po-type`)
+      .get(`${envAPI_URL}/analyze-po-type?start_date=${startDate}&end_date=${endDate}`)
       .then((response) => {
         setStandard(response.data.STANDARD);
         setBlanket(response.data.BLANKET_RELEASE);
@@ -53,7 +53,7 @@ function Dashboard({startDate,endDate}) {
   };
   const analyzePo = () => {
     axios
-      .get(`${envAPI_URL}/analyze-po`)
+      .get(`${envAPI_URL}/analyze-po?start_date=${startDate}&end_date=${endDate}`)
       .then((response) => {
         setAnalyzeDelay(response.data.delayed);
         setAnalyzeOntime(response.data.ontime);
@@ -64,7 +64,7 @@ function Dashboard({startDate,endDate}) {
   };
   const poStatus = () => {
     axios
-      .get(`${envAPI_URL}/analyze-po-status`)
+      .get(`${envAPI_URL}/analyze-po-status?start_date=${startDate}&end_date=${endDate}`)
       .then((response) => {
         setPoStatusOpen(response.data.OPEN);
         setPoStatusClose(response.data.CLOSE);
@@ -88,7 +88,7 @@ function Dashboard({startDate,endDate}) {
   const vendorPerformance = () => {
     axios
       .get(
-        `${envAPI_URL}/vendor-performance?start_date=2023-01-01&end_date=2024-12-31`
+        `${envAPI_URL}/vendor-performance?start_date=${startDate}&end_date=${endDate}`
       )
       .then((response) => {
         setPerformance(response.data);
@@ -97,9 +97,21 @@ function Dashboard({startDate,endDate}) {
         console.error("Error fetching data", error);
       });
   };
+  const noReceived = () => {
+    axios
+      .get(
+        `${envAPI_URL}/vendor-performance-no-received-date?start_date=${startDate}&end_date=${endDate}`
+      )
+      .then((response) => {
+        setNoData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data", error);
+      });
+  };
   const purchasesDept = () => {
     axios
-      .get(`${envAPI_URL}/${purchase}`)
+      .get(`${envAPI_URL}/deptwise-purchase-total?start_date=${startDate}&end_date=${endDate}`)
       .then((response) => {
         setPurchaseData(response.data);
       })
@@ -108,13 +120,14 @@ function Dashboard({startDate,endDate}) {
       });
   };
   useEffect(() => {
+    noReceived();
     poType();
     analyzePo();
     poStatus();
     topcategory();
     vendorPerformance();
     purchasesDept();
-  }, [category, purchase]);
+  }, [startDate,endDate,category]);
   const columns = [
     {
       name: "Vendor Name",
@@ -138,6 +151,11 @@ function Dashboard({startDate,endDate}) {
       sortable: true,
     },
     {
+      name: "line_Item_Desc",
+      selector: (row) => row.line_Item_Desc || "N/A",
+      sortable: true,
+    },
+    {
       name: "Tender Numbers",
       selector: (row) => row.tender_number || "N/A",
       sortable: true,
@@ -149,80 +167,152 @@ function Dashboard({startDate,endDate}) {
       sortable: true,
     },
   ];
-  const getBarChartData = (filterType, filterValue) => {
+  const columns2 = [
+    {
+      name: "Vendor Name",
+      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
+      sortable: true,
+      width: "350px",
+    },
+    {
+      name: "Total Days Delayed",
+      selector: (row) => row.days_delayed || "N/A",
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Total Purchase Value",
+      selector: (row) =>
+        row.purchase_value?.toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+        }) || "N/A",
+      sortable: true,
+    },
+    {
+      name: "line_Item_Desc",
+      selector: (row) => row.line_Item_Desc || "N/A",
+      sortable: true,
+    },
+    {
+      name: "Tender Numbers",
+      selector: (row) => row.tender_number || "N/A",
+      sortable: true,
+      width: "400px",
+    },
+    {
+      name: "PO Numbers",
+      selector: (row) => row.po_number || "N/A",
+      sortable: true,
+    },
+  ];
+  const getBarChartData = () => {
     if (!purchaseData) return {};
+  
     const groupedData = {};
+    
+    // Group data by department
     purchaseData.forEach((item) => {
-      const { Department, Month, Quarter, Year, line_Item_Value_With_Tax } =
-        item;
-      if (
-        (filterType === 4 && Month !== filterValue) ||
-        (filterType === 2 && Quarter !== filterValue) ||
-        (filterType === 2024 && Year !== filterValue)
-      ) {
-        return; 
-      }
-
+      const { Department, line_Item_Value_With_Tax } = item;
+  
       if (!groupedData[Department]) {
         groupedData[Department] = 0;
       }
       groupedData[Department] += line_Item_Value_With_Tax;
     });
-
+  
+    // Sort departments by the accumulated value in descending order
     const sortedDepartments = Object.entries(groupedData)
-      .sort((a, b) => b[1] - a[1]) 
-      .slice(0, 15); 
-
-    const labels = sortedDepartments.map(([department]) => department);
-    const data = sortedDepartments.map(([, value]) => value); 
-
-    const colors = labels.map(() => "#1976D2"); 
-
+      .sort((a, b) => b[1] - a[1]);
+  
+    // Generate labels and data arrays from the sorted departments
+    const labels = sortedDepartments.map(([department]) => department.slice(0, 15));
+    const data = sortedDepartments.map(([, value]) => value);
+  
+    // Set colors for all bars (this can be customized)
+    const colors = labels.map(() => "#1976D2");
+  
     return {
       labels,
       datasets: [
         {
-          label: `Purchase Value (${filterType}-${filterValue})`,
+          label: "Purchase Value (All Departments)", // Label for the chart
           data,
           backgroundColor: colors,
         },
       ],
     };
   };
+  
   const barChartOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Allow resizing based on container
-    indexAxis: "y", // Horizontal bar chart
+    maintainAspectRatio: false, // Allow chart resizing
+    indexAxis: "y", // Use horizontal bars
     plugins: {
       legend: {
-        display: false, // Hide legend
+        display: false, // Hide the legend
       },
       title: {
         display: true,
-        text: ``, // Title reflects filtered data
+        text: "Departments and Purchase Values", // Title of the chart
       },
       tooltip: {
-        enabled: true, // Enable tooltips
+        enabled: true, // Show tooltips
         callbacks: {
           label: function (tooltipItem) {
-            return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`; // Tooltip displays department value
+            return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString()}`; // Format tooltip value
           },
         },
       },
       datalabels: {
-        display: true, // Show data values on bars
+        display: true, // Display data values on bars
         color: "#fff", // Text color
-        anchor: "end", // Position at the end of the bar
-        align: "right", // Align text
-        formatter: (value) => value.toLocaleString(), // Format numbers
+        anchor: "end", // Position text at the end of the bar
+        align: "right", // Align text to the right
+        formatter: (value) => value.toLocaleString(), // Format values with commas
       },
     },
     hover: {
-      mode: "nearest", // Interaction mode
+      mode: "nearest", // Hover mode
     },
     interaction: {
-      mode: "nearest", // Ensure nearest point interaction
-      axis: "y", // Restrict interaction to y-axis
+      mode: "nearest", // Nearest point interaction
+      axis: "y", // Restrict interaction to the y-axis
+    },
+    layout: {
+      padding: {
+        top: 10,
+        right: 20,
+        bottom: 10,
+        left: 20, // Padding for the chart
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          // stepSize: 50000, // Step range of 50,000
+          callback: function (value) {
+            return value.toLocaleString(); // Format tick values with commas
+          },
+        },
+        title: {
+          display: true,
+          text: "Purchase Value", // X-axis title
+        },
+      },
+      y: {
+        ticks: {
+          autoSkip: false, // Ensure all department labels are displayed
+          maxRotation: 90, // Rotate labels for better readability
+          minRotation: 45, // Adjust rotation for long labels
+        },
+      },
+    },
+    elements: {
+      bar: {
+        borderWidth: 1, // Set the border width of bars
+        barThickness: 10, // Adjust bar thickness
+      },
     },
   };
   const pieChartData = {
@@ -232,21 +322,36 @@ function Dashboard({startDate,endDate}) {
             .map(
               (item) =>
                 item.vendor_Name ||
-                item.Tendor_No ||
+                item.Tender_No ||
                 item.project_Number_Name ||
                 item.line_Item_Desc ||
                 item.Department
             )
             .slice(0, 5) // Limit to 5 labels for balance
-        : ["test 1", "test 2", "test 3", "test 4", "test 5"], // Fallback labels
-
+        : ["Test 1", "Test 2", "Test 3", "Test 4", "Test 5"], // Fallback labels
+  
     datasets: [
       {
         label: "Items",
         data:
           categoryData.length > 0
-            ? categoryData.map((item) => item.line_Item_Value_With_Tax || 0) // Use line_Item_Value_With_Tax for each item
-            : [50, 50, 50, 50, 50], // Fallback data if no categoryData
+            ? (() => {
+                // Calculate percentages
+                const total = categoryData.reduce(
+                  (sum, item) => sum + (item.line_Item_Value_With_Tax || 0),
+                  0
+                );
+                return categoryData
+                  .map((item) =>
+                    total > 0
+                      ? Math.round(
+                          ((item.line_Item_Value_With_Tax || 0) / total) * 100
+                        )
+                      : 0
+                  )
+                  .slice(0, 5); // Limit to 5 data points
+              })()
+            : [20, 20, 20, 20, 20], // Fallback percentages if no categoryData
         backgroundColor: [
           "#87CEEB",
           "#ADD8E6",
@@ -257,7 +362,6 @@ function Dashboard({startDate,endDate}) {
       },
     ],
   };
-
   const pieChartOptions = {
     responsive: true,
     plugins: {
@@ -271,19 +375,17 @@ function Dashboard({startDate,endDate}) {
             const label = context.label || "";
             const value = context.raw || 0;
             const truncatedLabel = label.split(" ")[0].slice(0, 10);
-            return `${truncatedLabel}: ${value}`; 
+            return `${truncatedLabel}: ${Math.round(value)}%`; // Round percentage to whole number
           },
         },
       },
       datalabels: {
-        display: false, 
+        display: true, // Display percentage on the chart
+        color: "#000", // Data label text color
+        formatter: (value) => `${Math.round(value)}%`, // Format data as whole number percentage
       },
     },
   };
-  const handleTimePeriodChange = (e) => {
-    setPurchase(e.target.value);
-  };
-
   const handleChartTypeChange = (e) => {
     setSategory(e.target.value);
   };
@@ -304,12 +406,12 @@ function Dashboard({startDate,endDate}) {
             {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
             <div className="d-flex">
               <div
-                style={{ width: "50%", padding: "5px", textAlign: "center" }}
+                style={{ width: "50%", padding: "5px"}}
               >
                 <h5 style={{ fontSize: "12px", textAlign: "center" }}>
-                  BLANKET-RELEASE POs
+                  Blanket-Release POs
                 </h5>
-                <p style={{ fontSize: "10px" }}>{blanket.count}</p>
+                <p style={{ fontSize: "10px",textAlign: "center" }}>{blanket?blanket.count:"0"}</p>
               </div>
               <div
                 style={{
@@ -322,13 +424,12 @@ function Dashboard({startDate,endDate}) {
                   style={{
                     fontSize: "12px",
                     textAlign: "center",
-                    textAlign: "center",
                   }}
                 >
-                  STANDARD POs
+                  Standard POs
                 </h5>
                 <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {standard?.count}
+                  {standard?standard.count:"0"}
                 </p>
               </div>
             </div>
@@ -349,7 +450,7 @@ function Dashboard({startDate,endDate}) {
                   Open POs
                 </h5>
                 <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {poStatusOpen.count}
+                  {poStatusOpen?poStatusOpen.count:"0"}
                 </p>
               </div>
               <div
@@ -363,7 +464,7 @@ function Dashboard({startDate,endDate}) {
                   Close POs
                 </h5>
                 <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {poStatusClose.count}
+                  {poStatusClose ?poStatusClose.count:"0"}
                 </p>
               </div>
             </div>
@@ -387,7 +488,7 @@ function Dashboard({startDate,endDate}) {
                   Ontime POs
                 </h5>
                 <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {analyzeOntime.count}
+                  {analyzeOntime?analyzeOntime.count:"0"}
                 </p>
               </div>
               <div
@@ -402,7 +503,7 @@ function Dashboard({startDate,endDate}) {
                   Delayed POs
                 </h5>
                 <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {analyzeDelay.count}
+                  {analyzeDelay ?analyzeDelay.count:"0"}
                 </p>
               </div>
             </div>
@@ -415,18 +516,6 @@ function Dashboard({startDate,endDate}) {
           <h3 style={{ fontSize: "20px", color: "#012970" }}>
             Purchases By Department
           </h3>
-          <div className="d-flex align-items-center mb-2">
-            <select
-              className="form-select me-2"
-              value={purchase}
-              onChange={handleTimePeriodChange}
-              style={{ width: "auto" }}
-            >
-              <option value="monthwise-purchases">Monthly</option>
-              <option value="quarterwise-purchases">Quarterly</option>
-              <option value="yearwise-purchases">Yearly</option>
-            </select>
-          </div>
 
           <div style={{ height: "350px", marginTop: "20px" }}>
             <Bar
@@ -495,6 +584,16 @@ function Dashboard({startDate,endDate}) {
           title="Vendors Performance"
           columns={columns}
           data={performance || []}
+          pagination
+          paginationPerPage={5}
+          highlightOnHover
+        />
+      </div>
+      <div className="card">
+        <DataTable
+          title="Payment Turnaround Assessment"
+          columns={columns2}
+          data={noData || []}
           pagination
           paginationPerPage={5}
           highlightOnHover
