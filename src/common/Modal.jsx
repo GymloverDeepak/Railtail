@@ -26,23 +26,32 @@ function Modal({ isOpen, onClose, modalTitle = "", id = "" }) {
     chatBotResponse(task);
   };
 
-  const chatBotResponse = (input) => {
-    // Make sure you're passing the input to the API
+  const chatBotResponse = (task) => {
     axios
       .post(`${envAPI_URL}/ask`, { task: task })
       .then((response) => {
-        console.log("Bot response: ", response);
-        // You can handle the response data here
-        // setPurchaseData(response.data);
+        if (response.status === 200){
+        // Extract the 'response' property from the API response
+        const botMessage = response.data.response || "";
+  
+        setBotChat([
+          ...botChat,
+          { type: "user", text: task }, // Add user's input
+          { type: "bot", text: botMessage }, // Add bot's response
+        ]);
+        setTask("")
+      }
       })
       .catch((error) => {
         console.error("Error fetching data", error);
+        setTask("")
       });
   };
-
+  
+  
   useEffect(() => {
     chatBotResponse(task);
-  }, [botChat]);
+  }, [task]);
 
   // Function to handle the click of a suggestion
   const handleSuggestionClick = (suggestion) => {
@@ -70,8 +79,16 @@ function Modal({ isOpen, onClose, modalTitle = "", id = "" }) {
                 Close
               </button>
             </div>
+          
 
-            {/* Suggestions Section moved to the top */}
+            <div className="modal-body chat-container d-flex flex-column">
+              {botChat.map((chat, index) => (
+                <div key={index} className={`chat-bubble chat-${chat.type}`}>
+                  {chat.text}
+                </div>
+              ))}
+             
+            </div>
             {showSuggestions && (
               <div className="suggestions-container">
                 {suggestions.map((suggestion, index) => (
@@ -85,15 +102,6 @@ function Modal({ isOpen, onClose, modalTitle = "", id = "" }) {
                 ))}
               </div>
             )}
-
-            <div className="modal-body chat-container d-flex flex-column">
-              {botChat.map((chat, index) => (
-                <div key={index} className={`chat-bubble chat-${chat.type}`}>
-                  {chat.text}
-                </div>
-              ))}
-            </div>
-
             <div className="modal-footer chat-footer">
               {/* Input field for task */}
               <input

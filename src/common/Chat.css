@@ -92,25 +92,26 @@
     font-family: "Nunito", sans-serif;
 }
 
-.suggestions-container {
-    margin-bottom: 10px; /* Space between suggestions and chat */
-    padding: 10px;
-    background-color: #f8f8f8;
-    border-radius: 5px;
+
+  .suggestions-container {
+    margin-top: 10px;
+    margin-left: 300px; /* Add spacing between chat bubbles and suggestions */
+    display: flex;
+    flex-wrap: wrap; /* Allow suggestions to wrap onto the next line */
+    gap: 8px; /* Space between each suggestion bubble */
   }
   
   .suggestion-item {
-    padding: 8px;
-    cursor: pointer;
-    border-bottom: 1px solid #ddd;
+    background-color: #e7f3ff;
+    color: #0056b3;
+    padding: 8px 12px; /* Padding for clickable area */
+    border-radius: 16px; /* Rounded corners for suggestion bubbles */
+    cursor: pointer; /* Change cursor to pointer */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+    font-size: 14px; /* Match the chat text size */
   }
   
   .suggestion-item:hover {
-    background-color: #e0e0e0;
-  }
-  
-  .chat-container {
-    flex: 1; /* Ensures chat container takes up available space */
-    overflow-y: auto; /* Scroll when content overflows */
+    background-color: #e0e0e0; /* Change background on hover */
   }
   
