@@ -1,9 +1,7 @@
 import React, { useState,useEffect } from "react";
 import Dashboard from "./Dashboard";
 import Modal from "./Modal";
-import axios from "axios";
-
-function Main({ showPageTitle = true }) {
+function Main({}) {
  const envAPI_URL = import.meta.env.VITE_API_URL;
   const [showBot, setShowBot] = useState(false);
   const [startDate, setStartDate] = useState("");
@@ -20,12 +18,10 @@ function Main({ showPageTitle = true }) {
         console.error("Error fetching data", error);
       });
   };
-  useEffect(() => {
-    defaultDate();
-  }, []);
+
   return (
     <>
-      <main id="main" className="main" style={{ width: "100%" }}>
+      {/* <main id="main" className="main" style={{ width: "100%" }}>
         {showPageTitle && (
           <div className="pagetitle">
             <section className="section dashboard">
@@ -37,7 +33,7 @@ function Main({ showPageTitle = true }) {
                 <div className="d-flex align-items-center ms-auto">
                   <label htmlFor="startDate" className="form-label me-2"
                    style={{minWidth: "75px"}}>
-                    Start Date
+                    From
                   </label>
                   <input
                     type="date"
@@ -49,7 +45,7 @@ function Main({ showPageTitle = true }) {
                   />
                   <label htmlFor="endDate" className="form-label me-2"
                    style={{minWidth: "75px"}}>
-                    End Date
+                    To
                   </label>
                   <input
                     type="date"
@@ -67,7 +63,7 @@ function Main({ showPageTitle = true }) {
                   onClick={() => setShowBot(!showBot)}
                   style={{ height: "38px" }}
                 >
-                  Mr.Assistance
+                  My Assistant
                 </button>
               </div>
             </section>
@@ -79,7 +75,7 @@ function Main({ showPageTitle = true }) {
           modalTitle="Ask Buddy"
           id="buddy"
         />
-      </main>
+      </main> */}
       <Dashboard startDate={startDate} endDate={endDate} />
     </>
   );

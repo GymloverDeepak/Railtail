@@ -91,3 +91,26 @@
     color: #012970;
     font-family: "Nunito", sans-serif;
 }
+
+.suggestions-container {
+    margin-bottom: 10px; /* Space between suggestions and chat */
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+  }
+  
+  .suggestion-item {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .suggestion-item:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .chat-container {
+    flex: 1; /* Ensures chat container takes up available space */
+    overflow-y: auto; /* Scroll when content overflows */
+  }
+  

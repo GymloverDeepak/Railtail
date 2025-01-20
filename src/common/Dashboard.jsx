@@ -30,6 +30,7 @@ function Dashboard({startDate,endDate}) {
   const envAPI_URL = import.meta.env.VITE_API_URL;
   const [category, setSategory] = useState("top-vendors");
   const [standard, setStandard] = useState([]);
+  const [payment,setPayment] = useState([])
   const [blanket, setBlanket] = useState([]);
   const [noData, setNoData] = useState([]);
   const [analyzeDelay, setAnalyzeDelay] = useState([]);
@@ -119,6 +120,19 @@ function Dashboard({startDate,endDate}) {
         console.error("Error fetching data", error);
       });
   };
+  const paymentPerformance = () => {
+    axios
+      .get(
+        `${envAPI_URL}/payment-performance?start_date=${startDate}&end_date=${endDate}`
+      )
+      .then((response) => {
+        console.log("fetching",response.data)
+        setPayment(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data", error);
+      });
+  };
   useEffect(() => {
     noReceived();
     poType();
@@ -127,6 +141,7 @@ function Dashboard({startDate,endDate}) {
     topcategory();
     vendorPerformance();
     purchasesDept();
+    paymentPerformance()
   }, [startDate,endDate,category]);
   const columns = [
     {
@@ -143,11 +158,7 @@ function Dashboard({startDate,endDate}) {
     },
     {
       name: "Total Purchase Value",
-      selector: (row) =>
-        row.purchase_value?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "USD",
-        }) || "N/A",
+      selector: (row) => row.purchase_value || "N/A",
       sortable: true,
     },
     {
@@ -182,12 +193,44 @@ function Dashboard({startDate,endDate}) {
     },
     {
       name: "Total Purchase Value",
-      selector: (row) =>
-        row.purchase_value?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "USD",
-        }) || "N/A",
+      selector: (row) => row.purchase_value || "N/A",
       sortable: true,
+    },
+    {
+      name: "line_Item_Desc",
+      selector: (row) => row.line_Item_Desc || "N/A",
+      sortable: true,
+    },
+    {
+      name: "Tender Numbers",
+      selector: (row) => row.tender_number || "N/A",
+      sortable: true,
+      width: "400px",
+    },
+    {
+      name: "PO Numbers",
+      selector: (row) => row.po_number || "N/A",
+      sortable: true,
+    },
+  ];
+  const columns3 = [
+    {
+      name: "supplier invoice no.",
+      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
+      sortable: true,
+      width: "350px",
+    },
+    {
+      name: "Vendor Name",
+      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
+      sortable: true,
+      width: "350px",
+    },
+    {
+      name: "Total Days Delayed",
+      selector: (row) => row.days_delayed || "N/A",
+      sortable: true,
+      width: "150px",
     },
     {
       name: "line_Item_Desc",
@@ -224,8 +267,7 @@ function Dashboard({startDate,endDate}) {
     // Sort departments by the accumulated value in descending order
     const sortedDepartments = Object.entries(groupedData).sort((a, b) => b[1] - a[1]);
   
-    // Generate labels and data arrays from the sorted departments
-    const maxLength = 15; // Maximum department name length in characters
+    const maxLength = 50; // Maximum department name length in characters
     const labels = sortedDepartments.map(([department]) => {
       if (typeof department === "string") {
         return department.length > maxLength ? department.slice(0, maxLength) + "..." : department;
@@ -233,12 +275,13 @@ function Dashboard({startDate,endDate}) {
       return department;
     });
   
+    const fullLabels = sortedDepartments.map(([department]) => department); // Full department names
     const data = sortedDepartments.map(([, value]) => value);
   
     // Set colors for all bars
     const colors = labels.map(() => "#1976D2");
   
-    return { labels, data, sortedDepartments }; // Return sortedDepartments for height calculation
+    return { labels, data, colors, fullLabels, sortedDepartments };
   };
   
   const barChartOptions = {
@@ -257,7 +300,11 @@ function Dashboard({startDate,endDate}) {
         enabled: true,
         callbacks: {
           label: function (tooltipItem) {
-            return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString()}`;
+            const barChartData = getBarChartData(); // Retrieve full data including full labels
+            const fullLabels = barChartData.fullLabels; // Full department names
+            const fullDepartmentName = fullLabels[tooltipItem.dataIndex]; // Get full department name
+            const value = tooltipItem.raw; // Purchase value
+            return `${value.toLocaleString()}`; // Display full name and formatted value
           },
         },
       },
@@ -266,7 +313,7 @@ function Dashboard({startDate,endDate}) {
         color: "#fff",
         anchor: "end",
         align: "right",
-        formatter: (value) => value.toLocaleString(),
+        formatter: (value) => value.toLocaleString(), // Format value with commas
       },
     },
     layout: {
@@ -281,7 +328,7 @@ function Dashboard({startDate,endDate}) {
       x: {
         ticks: {
           font: { size: 10 }, // Smaller font for x-axis
-          callback: (value) => value.toLocaleString(),
+          callback: (value) => value.toLocaleString(), // Format value with commas
         },
         title: {
           display: true,
@@ -304,6 +351,8 @@ function Dashboard({startDate,endDate}) {
       },
     },
   };
+  
+  
   
   // Dynamically adjust chart container height based on number of departments
   const MyChartComponent = () => {
@@ -402,26 +451,29 @@ function Dashboard({startDate,endDate}) {
       tooltip: {
         callbacks: {
           label: function (context) {
-            const label = context.label || "";
-            const value = context.raw || 0;
-            const truncatedLabel = label.split(" ")[0].slice(0, 10);
-            return `${truncatedLabel}: ${Math.round(value)}%`; // Round percentage to whole number
+            const label = "" || ""; // Get the label
+            const index = context.dataIndex; // Get the index of the current item
+            const rawData = context.chart.data.datasets[0].data; // Access the raw data array
+            const fullValue = categoryData[index]?.line_Item_Value_With_Tax || 0; // Get the full value from categoryData
+            const truncatedLabel = label.split(" ")[0].slice(0, 10); // Optional: Truncate the label
+            return `${truncatedLabel}: ${fullValue.toLocaleString()} `; // Format and display the full value
           },
         },
       },
       datalabels: {
         display: true, // Display percentage on the chart
         color: "#000", // Data label text color
-        formatter: (value) => `${Math.round(value)}%`, // Format data as whole number percentage
+        formatter: (value) => `${Math.round(value)}%`, // Retain percentage for chart labels
       },
     },
   };
+  
   const handleChartTypeChange = (e) => {
     setSategory(e.target.value);
   };
   return (
-    <div className="mt-4">
-      <div className="mb-4">
+    <div className="new5" >
+      <div className="mb-2">
         {/* <h3>POs</h3> */}
         <div className="d-flex">
           <div
@@ -491,7 +543,7 @@ function Dashboard({startDate,endDate}) {
                 }}
               >
                 <h5 style={{ fontSize: "12px", textAlign: "center" }}>
-                  Close POs
+                  Closed POs
                 </h5>
                 <p style={{ fontSize: "10px", textAlign: "center" }}>
                   {poStatusClose ?poStatusClose.count:"0"}
@@ -515,7 +567,7 @@ function Dashboard({startDate,endDate}) {
             <div className="d-flex">
               <div style={{ width: "50%", padding: "5px" }}>
                 <h5 style={{ fontSize: "12px", textAlign: "center" }}>
-                  Ontime POs
+                  On-time POs
                 </h5>
                 <p style={{ fontSize: "10px", textAlign: "center" }}>
                   {analyzeOntime?analyzeOntime.count:"0"}
@@ -608,7 +660,7 @@ function Dashboard({startDate,endDate}) {
       </div>
       <div className="card">
         <DataTable
-          title="Vendors Performance"
+          title="Vendors Delivery Performance"
           columns={columns}
           data={performance || []}
           pagination
@@ -618,9 +670,19 @@ function Dashboard({startDate,endDate}) {
       </div>
       <div className="card">
         <DataTable
-          title="Payment Turnaround Assessment"
+          title="Delayed POs(Not delivered)"
           columns={columns2}
           data={noData || []}
+          pagination
+          paginationPerPage={5}
+          highlightOnHover
+        />
+      </div>
+      <div className="card">
+        <DataTable
+          title="Payment Performance"
+          columns={columns3}
+          data={payment || []}
           pagination
           paginationPerPage={5}
           highlightOnHover

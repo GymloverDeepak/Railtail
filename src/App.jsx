@@ -8,8 +8,8 @@ function App() {
     <>
       <Header />
       {/* <SiderBar /> */}
-      <Main >
-      </Main>
+      {/* <Main >
+      </Main> */}
     </>
   )
 }

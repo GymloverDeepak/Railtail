@@ -1,243 +1,156 @@
-import React from 'react'
-import Profile from '../assets/img/profile-img.jpg'
-
+import React, { useState, useEffect } from "react";
+import Profile from "../assets/img/profile-img.jpg";
+import Dashboard from "./Dashboard";
+import axios from "axios";
+import Modal from "./Modal";
 function Header() {
-    function handleSideNav(e) {
-        e.preventDefault();
-        if (document.body.className === '') {
-            document.body.className += 'toggle-sidebar';
-        } else {
-            document.body.className = '';
-        }
-    };
-    return (
-        <header id="header" className="header fixed-top d-flex align-items-center">
+  const envAPI_URL = import.meta.env.VITE_API_URL;
+  const [showBot, setShowBot] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const defaultDate = () => {
+    axios
+      .get(`${envAPI_URL}/default-dates`)
+      .then((response) => {
+        setStartDate(response.data.start_date);
+        setEndDate(response.data.end_date);
+      })
+      .catch((error) => {
+        console.error("Error fetching data", error);
+      });
+  };
+  useEffect(() => {
+    defaultDate();
+  }, []);
 
-            <div className="d-flex align-items-center justify-content-between">
-                <a href="/" className="logo d-flex align-items-center">
-                    {/* <img src={Profile} alt="" /> */}
-                    <span className="d-none d-lg-block">Railtel</span>
-                </a>
-                <i className="bi bi-list toggle-sidebar-btn" onClick={handleSideNav}></i>
-            </div>
+  return (
+    <>
+      <header
+        id="header"
+        className="header fixed-top d-flex align-items-center"
+      >
+        <div className="topbar">
+          <div className="d-flex align-items-center justify-content-between">
+            <a href="/" className="logo d-flex align-items-center">
+              {/* <img src={Profile} alt="" /> */}
+              <span className="d-none d-lg-block">Railtel</span>
+            </a>
+          </div>
 
-            <div className="search-bar">
-                <form className="search-form d-flex align-items-center" method="POST" action="#">
-                    <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
-                    <button type="submit" title="Search"><i className="bi bi-search"></i></button>
-                </form>
-            </div>
+          {/* <nav className="header-nav ms-auto">
+          <ul className="d-flex align-items-center">
+            <li className="nav-item d-block d-lg-none">
+              <a className="nav-link nav-icon search-bar-toggle " href="#">
+                <i className="bi bi-search"></i>
+              </a>
+            </li>
+            <li className="nav-item dropdown pe-3">
+              <a className="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                <img src={Profile} alt="Profile" className="rounded-circle" />
+                <span className="d-none d-md-block dropdown-toggle ps-2">Demo user</span>
+              </a>
+      
+              <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                <li className="dropdown-header">
+                  <h6>Demo user</h6>
+                  <span>User</span>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+      
+                <li>
+                  <a className="dropdown-item d-flex align-items-center" href="#">
+                    <i className="bi bi-person"></i>
+                    <span>My Profile</span>
+                  </a>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+      
+                <li>
+                  <a className="dropdown-item d-flex align-items-center" href="#">
+                    <i className="bi bi-gear"></i>
+                    <span>Account Settings</span>
+                  </a>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+      
+                <li>
+                  <a className="dropdown-item d-flex align-items-center" href="#">
+                    <i className="bi bi-question-circle"></i>
+                    <span>Need Help?</span>
+                  </a>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+      
+                <li>
+                  <a className="dropdown-item d-flex align-items-center" href="#">
+                    <i className="bi bi-box-arrow-right"></i>
+                    <span>Sign Out</span>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav> */}
 
-            <nav className="header-nav ms-auto">
-                <ul className="d-flex align-items-center">
-
-                    <li className="nav-item d-block d-lg-none">
-                        <a className="nav-link nav-icon search-bar-toggle " href="#">
-                            <i className="bi bi-search"></i>
-                        </a>
-                    </li>
-
-                    {/* <li className="nav-item dropdown">
-
-                        <a className="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-                            <i className="bi bi-bell"></i>
-                            <span className="badge bg-primary badge-number">4</span>
-                        </a>
-
-                        <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-                            <li className="dropdown-header">
-                                You have 4 new notifications
-                                <a href="#"><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="notification-item">
-                                <i className="bi bi-exclamation-circle text-warning"></i>
-                                <div>
-                                    <h4>Lorem Ipsum</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>30 min. ago</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="notification-item">
-                                <i className="bi bi-x-circle text-danger"></i>
-                                <div>
-                                    <h4>Atque rerum nesciunt</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>1 hr. ago</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="notification-item">
-                                <i className="bi bi-check-circle text-success"></i>
-                                <div>
-                                    <h4>Sit rerum fuga</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>2 hrs. ago</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="notification-item">
-                                <i className="bi bi-info-circle text-primary"></i>
-                                <div>
-                                    <h4>Dicta reprehenderit</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>4 hrs. ago</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-                            <li className="dropdown-footer">
-                                <a href="#">Show all notifications</a>
-                            </li>
-
-                        </ul>
-
-                    </li> */}
-
-                    {/* <li className="nav-item dropdown">
-
-                        <a className="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-                            <i className="bi bi-chat-left-text"></i>
-                            <span className="badge bg-success badge-number">3</span>
-                        </a>
-
-                        <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
-                            <li className="dropdown-header">
-                                You have 3 new messages
-                                <a href="#"><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="message-item">
-                                <a href="#">
-                                    <img src="assets/img/messages-1.jpg" alt="" className="rounded-circle" />
-                                    <div>
-                                        <h4>Maria Hudson</h4>
-                                        <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                        <p>4 hrs. ago</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="message-item">
-                                <a href="#">
-                                    <img src="assets/img/messages-2.jpg" alt="" className="rounded-circle" />
-                                    <div>
-                                        <h4>Anna Nelson</h4>
-                                        <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                        <p>6 hrs. ago</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="message-item">
-                                <a href="#">
-                                    <img src="assets/img/messages-3.jpg" alt="" className="rounded-circle" />
-                                    <div>
-                                        <h4>David Muldon</h4>
-                                        <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                        <p>8 hrs. ago</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="dropdown-footer">
-                                <a href="#">Show all messages</a>
-                            </li>
-
-                        </ul>
-
-                    </li> */}
-
-                    <li className="nav-item dropdown pe-3">
-
-                        <a className="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <img src={Profile} alt="Profile" className="rounded-circle" />
-                            <span className="d-none d-md-block dropdown-toggle ps-2">Demo user</span>
-                        </a>
-
-                        <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-                            <li className="dropdown-header">
-                                <h6>Demo user</h6>
-                                <span>User</span>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li>
-                                <a className="dropdown-item d-flex align-items-center" href="#">
-                                    <i className="bi bi-person"></i>
-                                    <span>My Profile</span>
-                                </a>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li>
-                                <a className="dropdown-item d-flex align-items-center" href="#">
-                                    <i className="bi bi-gear"></i>
-                                    <span>Account Settings</span>
-                                </a>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li>
-                                <a className="dropdown-item d-flex align-items-center" href="#">
-                                    <i className="bi bi-question-circle"></i>
-                                    <span>Need Help?</span>
-                                </a>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li>
-                                <a className="dropdown-item d-flex align-items-center" href="#">
-                                    <i className="bi bi-box-arrow-right"></i>
-                                    <span>Sign Out</span>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-
-                </ul>
-            </nav>
-        </header>
-    )
+          {/* Add Inputs and Button here */}
+          <div className="d-flex align-items-center">
+            <label
+              htmlFor="startDate"
+              className="form-label me-2"
+            >
+              From
+            </label>
+            <input
+              type="date"
+              id="startDate"
+              className="form-control me-3"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              style={{ width: "150px" }}
+            />
+            <label
+              htmlFor="endDate"
+              className="form-label me-2"
+            >
+              To
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              className="form-control me-3"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              style={{ width: "150px" }}
+            />
+            <button
+              className="btn btn-primary"
+              type="button"
+              id="ask_buddy"
+              onClick={() => setShowBot(!showBot)}
+              style={{ height: "38px", width: "130px" }}
+            >
+              My Assistant
+            </button>
+          </div>
+        </div>
+      </header>
+      <Modal
+        isOpen={showBot}
+        onClose={setShowBot}
+        modalTitle="Ask Buddy"
+        id="buddy"
+      />
+      <Dashboard startDate={startDate} endDate={endDate} />
+    </>
+  );
 }
 
-export default Header
+export default Header;

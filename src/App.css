@@ -12,3 +12,12 @@
 .rdt_TableRow{
   min-height: 37px !important;
 }
+.new5{
+margin-Top: 4rem;
+}
+
+.topbar{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
