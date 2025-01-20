@@ -35,7 +35,8 @@ function Main({ showPageTitle = true }) {
               >
                 <h1 className="card-title ms-0">Dashboard</h1>
                 <div className="d-flex align-items-center ms-auto">
-                  <label htmlFor="startDate" className="form-label me-2">
+                  <label htmlFor="startDate" className="form-label me-2"
+                   style={{minWidth: "75px"}}>
                     Start Date
                   </label>
                   <input
@@ -44,9 +45,10 @@ function Main({ showPageTitle = true }) {
                     className="form-control me-3"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    style={{ maxWidth: "200px" }}
+                    style={{ minWidth: "100px" }}
                   />
-                  <label htmlFor="endDate" className="form-label me-2">
+                  <label htmlFor="endDate" className="form-label me-2"
+                   style={{minWidth: "75px"}}>
                     End Date
                   </label>
                   <input
@@ -55,7 +57,7 @@ function Main({ showPageTitle = true }) {
                     className="form-control me-3"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    style={{ maxWidth: "200px" }}
+                    style={{ minWidth: "100px"}}
                   />
                 </div>
                 <button

@@ -207,10 +207,10 @@ function Dashboard({startDate,endDate}) {
     },
   ];
   const getBarChartData = () => {
-    if (!purchaseData) return {};
+    if (!purchaseData || !Array.isArray(purchaseData)) return {};
   
     const groupedData = {};
-    
+  
     // Group data by department
     purchaseData.forEach((item) => {
       const { Department, line_Item_Value_With_Tax } = item;
@@ -222,26 +222,23 @@ function Dashboard({startDate,endDate}) {
     });
   
     // Sort departments by the accumulated value in descending order
-    const sortedDepartments = Object.entries(groupedData)
-      .sort((a, b) => b[1] - a[1]);
+    const sortedDepartments = Object.entries(groupedData).sort((a, b) => b[1] - a[1]);
   
     // Generate labels and data arrays from the sorted departments
-    const labels = sortedDepartments.map(([department]) => department.slice(0, 15));
+    const maxLength = 15; // Maximum department name length in characters
+    const labels = sortedDepartments.map(([department]) => {
+      if (typeof department === "string") {
+        return department.length > maxLength ? department.slice(0, maxLength) + "..." : department;
+      }
+      return department;
+    });
+  
     const data = sortedDepartments.map(([, value]) => value);
   
-    // Set colors for all bars (this can be customized)
+    // Set colors for all bars
     const colors = labels.map(() => "#1976D2");
   
-    return {
-      labels,
-      datasets: [
-        {
-          label: "Purchase Value (All Departments)", // Label for the chart
-          data,
-          backgroundColor: colors,
-        },
-      ],
-    };
+    return { labels, data, sortedDepartments }; // Return sortedDepartments for height calculation
   };
   
   const barChartOptions = {
@@ -257,64 +254,97 @@ function Dashboard({startDate,endDate}) {
         text: "Departments and Purchase Values", // Title of the chart
       },
       tooltip: {
-        enabled: true, // Show tooltips
+        enabled: true,
         callbacks: {
           label: function (tooltipItem) {
-            return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString()}`; // Format tooltip value
+            return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString()}`;
           },
         },
       },
       datalabels: {
-        display: true, // Display data values on bars
-        color: "#fff", // Text color
-        anchor: "end", // Position text at the end of the bar
-        align: "right", // Align text to the right
-        formatter: (value) => value.toLocaleString(), // Format values with commas
+        display: true,
+        color: "#fff",
+        anchor: "end",
+        align: "right",
+        formatter: (value) => value.toLocaleString(),
       },
-    },
-    hover: {
-      mode: "nearest", // Hover mode
-    },
-    interaction: {
-      mode: "nearest", // Nearest point interaction
-      axis: "y", // Restrict interaction to the y-axis
     },
     layout: {
       padding: {
         top: 10,
         right: 20,
         bottom: 10,
-        left: 20, // Padding for the chart
+        left: 20,
       },
     },
     scales: {
       x: {
         ticks: {
-          // stepSize: 50000, // Step range of 50,000
-          callback: function (value) {
-            return value.toLocaleString(); // Format tick values with commas
-          },
+          font: { size: 10 }, // Smaller font for x-axis
+          callback: (value) => value.toLocaleString(),
         },
         title: {
           display: true,
-          text: "Purchase Value", // X-axis title
+          text: "Purchase Value",
         },
       },
       y: {
         ticks: {
           autoSkip: false, // Ensure all department labels are displayed
-          maxRotation: 90, // Rotate labels for better readability
-          minRotation: 45, // Adjust rotation for long labels
+          font: { size: 10 }, // Smaller font for y-axis
+          maxRotation: 0, // Keep labels horizontal
+          minRotation: 0,
         },
       },
     },
     elements: {
       bar: {
-        borderWidth: 1, // Set the border width of bars
-        barThickness: 10, // Adjust bar thickness
+        borderWidth: 1,
+        barThickness: 15, // Thinner bars for compactness
       },
     },
   };
+  
+  // Dynamically adjust chart container height based on number of departments
+  const MyChartComponent = () => {
+    const { labels, data, sortedDepartments } = getBarChartData();
+  
+    // Dynamically calculate height based on the number of departments
+    const chartContainerStyle = {
+      height: `${Math.max(300, sortedDepartments.length * 25)}px`, // Adjust dynamically based on number of departments
+    };
+  
+    return (
+      <Bar
+        style={chartContainerStyle}
+        data={{
+          labels,
+          datasets: [
+            {
+              label: "Purchase Value (All Departments)",
+              data,
+              backgroundColor: labels.map(() => "#1976D2"),
+            },
+          ],
+        }}
+        options={{
+          ...barChartOptions,
+          maintainAspectRatio: false,
+        }}
+      />
+    );
+  };
+  
+  const { labels, data, sortedDepartments } = getBarChartData();
+  
+  // Dynamically adjust chart container height based on number of departments
+  const chartContainerStyle = {
+    height: `${Math.max(300, sortedDepartments.length * 25)}px`, // Adjust dynamically based on number of departments
+  };
+  
+  // Render the chart
+
+  
   const pieChartData = {
     labels:
       categoryData.length > 0
@@ -517,27 +547,24 @@ function Dashboard({startDate,endDate}) {
             Purchases By Department
           </h3>
 
-          <div style={{ height: "350px", marginTop: "20px" }}>
-            <Bar
-              data={getBarChartData()}
-              options={{
-                ...barChartOptions,
-                maintainAspectRatio: false,
-                responsive: true,
-                scales: {
-                  x: {
-                    ticks: {
-                      font: { size: 10 },
-                    },
-                  },
-                  y: {
-                    ticks: {
-                      font: { size: 12 },
-                    },
-                  },
-                },
-              }}
-            />
+          <div style={{ height: "500px", marginTop: "10px" }}>
+          <Bar
+      style={chartContainerStyle}
+      data={{
+        labels,
+        datasets: [
+          {
+            label: "Purchase Value (All Departments)",
+            data,
+            backgroundColor: labels.map(() => "#1976D2"),
+          },
+        ],
+      }}
+      options={{
+        ...barChartOptions,
+        maintainAspectRatio: false,
+      }}
+    />
           </div>
         </div>
         <div className="card p-3" style={{ width: "50%", height: "500px" }}>
