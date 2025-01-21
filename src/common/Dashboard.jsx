@@ -260,8 +260,7 @@ function Dashboard({startDate,endDate}) {
   
     const groupedData = {};
     const departmentTotalValues = {};
-  
-    // Group data by department
+    
     purchaseData.forEach((item) => {
       const { Department, total_value, unique_po_count } = item;
   
@@ -270,15 +269,11 @@ function Dashboard({startDate,endDate}) {
         departmentTotalValues[Department] = 0;
       }
   
-      // Accumulate unique_po_count for bar values
       groupedData[Department] += unique_po_count;
-  
-      // Store the total_value for tooltips
       departmentTotalValues[Department] += total_value;
     });
   
-    // Sort departments by the accumulated value in descending order
-    const sortedDepartments = Object.entries(groupedData).sort((a, b) => b[1] - a[1]);
+    const sortedDepartments = Object.entries(groupedData).sort((a, b) => b[1] - a[1]) || [];
   
     const maxLength = 50; // Maximum department name length in characters
     const labels = sortedDepartments.map(([department]) => {
@@ -296,7 +291,7 @@ function Dashboard({startDate,endDate}) {
   
     return { labels, data, colors, fullLabels, sortedDepartments, departmentTotalValues };
   };
-  
+
   const barChartOptions = {
     responsive: true,
     maintainAspectRatio: false, // Allow chart resizing
@@ -366,47 +361,11 @@ function Dashboard({startDate,endDate}) {
     },
   };
   
-  
-  
-  // Dynamically adjust chart container height based on number of departments
-  const MyChartComponent = () => {
-    const { labels, data, sortedDepartments } = getBarChartData();
-  
-    // Dynamically calculate height based on the number of departments
-    const chartContainerStyle = {
-      height: `${Math.max(300, sortedDepartments.length * 25)}px`, // Adjust dynamically based on number of departments
-    };
-  
-    return (
-      <Bar
-        style={chartContainerStyle}
-        data={{
-          labels,
-          datasets: [
-            {
-              label: "Purchase Value (All Departments)",
-              data,
-              backgroundColor: labels.map(() => "#1976D2"),
-            },
-          ],
-        }}
-        options={{
-          ...barChartOptions,
-          maintainAspectRatio: false,
-        }}
-      />
-    );
-  };
-  
   const { labels, data, sortedDepartments } = getBarChartData();
   
-  // Dynamically adjust chart container height based on number of departments
   const chartContainerStyle = {
     height: `${Math.max(300, sortedDepartments.length * 25)}px`, // Adjust dynamically based on number of departments
   };
-  
-  // Render the chart
-
   
   const pieChartData = {
     labels:
@@ -487,14 +446,14 @@ function Dashboard({startDate,endDate}) {
   };
   return (
     <div className="new5" >
-      <div className="mb-2">
+      <div className="mb-1">
         {/* <h3>POs</h3> */}
         <div className="d-flex">
           <div
-            className="card p-3"
+            className="card"
             style={{
               width: "33%",
-              height: "80px", // Reduced height
+              height: "50px", // Reduced height
               backgroundColor: "#f9f9f9",
               margin: "10px",
             }}
@@ -502,9 +461,9 @@ function Dashboard({startDate,endDate}) {
             {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
             <div className="d-flex">
               <div
-                style={{ width: "50%", padding: "5px"}}
+                style={{ width: "50%",}}
               >
-                <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                <h5 style={{ fontSize: "12px", textAlign: "center", padding: "4px", }}>
                   Blanket-Release POs
                 </h5>
                 <p style={{ fontSize: "10px",textAlign: "center" }}>{blanket?blanket.count:"0"}</p>
@@ -512,7 +471,8 @@ function Dashboard({startDate,endDate}) {
               <div
                 style={{
                   width: "50%",
-                  padding: "5px",
+                  height: "48px",
+                  padding: "4px",
                   borderLeft: "1px solid #ddd",
                 }}
               >
@@ -531,10 +491,10 @@ function Dashboard({startDate,endDate}) {
             </div>
           </div>
           <div
-            className="card p-3 "
+            className="card "
             style={{
               width: "33%",
-              height: "80px", // Reduced height
+              height: "50px", // Reduced height
               backgroundColor: "#f9f9f9",
               margin: "10px",
             }}
@@ -552,6 +512,7 @@ function Dashboard({startDate,endDate}) {
               <div
                 style={{
                   width: "50%",
+                  height: "48px",
                   padding: "5px",
                   borderLeft: "1px solid #ddd",
                 }}
@@ -567,10 +528,10 @@ function Dashboard({startDate,endDate}) {
           </div>
 
           <div
-            className="card p-3"
+            className="card"
             style={{
               width: "33%",
-              height: "80px", // Reduced height
+              height: "50px", // Reduced height
               backgroundColor: "#f9f9f9",
               margin: "10px",
             }}
@@ -591,6 +552,7 @@ function Dashboard({startDate,endDate}) {
                 style={{
                   width: "50%",
                   padding: "5px",
+                  height: "48px",
                   borderLeft: "1px solid #ddd",
                 }}
               >
@@ -606,7 +568,7 @@ function Dashboard({startDate,endDate}) {
         </div>
       </div>
 
-      <div className="mb-4 d-flex ">
+      <div className=" d-flex ">
         <div className="card p-3" style={{ width: "50%", height: "500px" }}>
           <h3 style={{ fontSize: "20px", color: "#012970" }}>
             Purchases By Department
@@ -635,8 +597,8 @@ function Dashboard({startDate,endDate}) {
         <div className="card p-3" style={{ width: "50%", height: "500px" }}>
           {/* <h3></h3> */}
           <div>
-            <div className="d-flex align-items-center mb-3">
-              <div className="me-2" style={{ width: "33%" }}>
+            <div className="d-flex align-items-center mb-2">
+              <div className="me-3" style={{ width: "33%" }}>
                 <label
                   htmlFor="category"
                   className="form-label"
