@@ -341,7 +341,7 @@ function Dashboard({startDate,endDate}) {
         },
         title: {
           display: true,
-          text: "Purchase Values (INR)",
+          text: "Purchase Order(count)",
         },
       },
       y: {
