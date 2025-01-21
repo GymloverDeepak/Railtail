@@ -311,9 +311,19 @@ function Dashboard({startDate,endDate}) {
             const barChartData = getBarChartData(); // Retrieve full data
             const fullLabels = barChartData.fullLabels; // Full department names
             const departmentTotalValues = barChartData.departmentTotalValues; // Total values for tooltips
-            const department = fullLabels[tooltipItem.dataIndex]; // Get full department name
-            const totalValue = departmentTotalValues[department]; // Retrieve the total value
-            return `Total Value: ${totalValue.toLocaleString()}`; // Display formatted value
+            const sortedDepartments = barChartData.sortedDepartments; // Get counts from sorted data
+  
+            // Get department name and values
+            const department = fullLabels[tooltipItem.dataIndex]; // Full department name
+            const totalValue = departmentTotalValues[department] || 0; // Total value for department
+            const count = sortedDepartments[tooltipItem.dataIndex][1] || 0; // Count (unique_po_count)
+  
+            // Format tooltip text
+            return [
+              `Department: ${department}`,
+              `Total Value: ₹${totalValue.toLocaleString()}`, // Display formatted total value
+              `Total Count: ${count.toLocaleString()}`, // Display formatted count
+            ];
           },
         },
       },
@@ -360,6 +370,7 @@ function Dashboard({startDate,endDate}) {
       },
     },
   };
+  
   
   const { labels, data, sortedDepartments } = getBarChartData();
   
