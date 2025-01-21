@@ -33,8 +33,8 @@ function Header() {
           <div className="d-flex align-items-center justify-content-between">
             <a href="/" className="logo d-flex align-items-center">
               {/* <img src={Profile} alt="" /> */}
-              <span className="d-none d-lg-block">Railtel-</span>
-              <span className="d-none d-lg-block">Dashboard</span>
+              <span className="d-none d-lg-block">Railtel</span>
+              {/* <span className="d-none d-lg-block">Dashboard</span> */}
             </a>
           </div>
 

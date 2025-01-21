@@ -126,7 +126,6 @@ function Dashboard({startDate,endDate}) {
         `${envAPI_URL}/payment-performance?start_date=${startDate}&end_date=${endDate}`
       )
       .then((response) => {
-        console.log("fetching",response.data)
         setPayment(response.data);
       })
       .catch((error) => {
@@ -160,17 +159,18 @@ function Dashboard({startDate,endDate}) {
       name: "Total Purchase Value",
       selector: (row) => row.purchase_value || "N/A",
       sortable: true,
+      width: "150px"
     },
     {
       name: "line_Item_Desc",
-      selector: (row) => row.line_Item_Desc || "N/A",
+      selector: (row) => row.line_item_desc || "N/A",
       sortable: true,
     },
     {
       name: "Tender Numbers",
       selector: (row) => row.tender_number || "N/A",
       sortable: true,
-      width: "400px",
+      width: "200px",
     },
     {
       name: "PO Numbers",
@@ -198,14 +198,15 @@ function Dashboard({startDate,endDate}) {
     },
     {
       name: "line_Item_Desc",
-      selector: (row) => row.line_Item_Desc || "N/A",
+      selector: (row) => row.line_item_desc|| "N/A",
       sortable: true,
+      width: "200px",
     },
     {
       name: "Tender Numbers",
       selector: (row) => row.tender_number || "N/A",
       sortable: true,
-      width: "400px",
+      width: "250px",
     },
     {
       name: "PO Numbers",
@@ -253,15 +254,22 @@ function Dashboard({startDate,endDate}) {
     if (!purchaseData || !Array.isArray(purchaseData)) return {};
   
     const groupedData = {};
+    const departmentTotalValues = {};
   
     // Group data by department
     purchaseData.forEach((item) => {
-      const { Department, line_Item_Value_With_Tax } = item;
+      const { Department, total_value, unique_po_count } = item;
   
       if (!groupedData[Department]) {
         groupedData[Department] = 0;
+        departmentTotalValues[Department] = 0;
       }
-      groupedData[Department] += line_Item_Value_With_Tax;
+  
+      // Accumulate unique_po_count for bar values
+      groupedData[Department] += unique_po_count;
+  
+      // Store the total_value for tooltips
+      departmentTotalValues[Department] += total_value;
     });
   
     // Sort departments by the accumulated value in descending order
@@ -281,7 +289,7 @@ function Dashboard({startDate,endDate}) {
     // Set colors for all bars
     const colors = labels.map(() => "#1976D2");
   
-    return { labels, data, colors, fullLabels, sortedDepartments };
+    return { labels, data, colors, fullLabels, sortedDepartments, departmentTotalValues };
   };
   
   const barChartOptions = {
@@ -300,11 +308,12 @@ function Dashboard({startDate,endDate}) {
         enabled: true,
         callbacks: {
           label: function (tooltipItem) {
-            const barChartData = getBarChartData(); // Retrieve full data including full labels
+            const barChartData = getBarChartData(); // Retrieve full data
             const fullLabels = barChartData.fullLabels; // Full department names
-            const fullDepartmentName = fullLabels[tooltipItem.dataIndex]; // Get full department name
-            const value = tooltipItem.raw; // Purchase value
-            return `${value.toLocaleString()}`; // Display full name and formatted value
+            const departmentTotalValues = barChartData.departmentTotalValues; // Total values for tooltips
+            const department = fullLabels[tooltipItem.dataIndex]; // Get full department name
+            const totalValue = departmentTotalValues[department]; // Retrieve the total value
+            return `Total Value: ${totalValue.toLocaleString()}`; // Display formatted value
           },
         },
       },
@@ -332,7 +341,7 @@ function Dashboard({startDate,endDate}) {
         },
         title: {
           display: true,
-          text: "Purchase Value",
+          text: "Purchase Values (INR)",
         },
       },
       y: {
@@ -567,7 +576,7 @@ function Dashboard({startDate,endDate}) {
             <div className="d-flex">
               <div style={{ width: "50%", padding: "5px" }}>
                 <h5 style={{ fontSize: "12px", textAlign: "center" }}>
-                  On-time POs
+                  On-time PO Line Items
                 </h5>
                 <p style={{ fontSize: "10px", textAlign: "center" }}>
                   {analyzeOntime?analyzeOntime.count:"0"}
@@ -581,8 +590,7 @@ function Dashboard({startDate,endDate}) {
                 }}
               >
                 <h5 style={{ fontSize: "12px", textAlign: "center" }}>
-                  {" "}
-                  Delayed POs
+                  Delayed PO Line Items
                 </h5>
                 <p style={{ fontSize: "10px", textAlign: "center" }}>
                   {analyzeDelay ?analyzeDelay.count:"0"}
