@@ -151,7 +151,7 @@ function Dashboard({startDate,endDate}) {
     },
     {
       name: "Total Days Delayed",
-      selector: (row) => row.days_delayed || "N/A",
+      selector: (row) => row.DaysDelayed || "N/A",
       sortable: true,
       width: "150px",
     },
@@ -167,18 +167,60 @@ function Dashboard({startDate,endDate}) {
       sortable: true,
     },
     {
-      name: "Tender Numbers",
+      name: "Tender Number",
       selector: (row) => row.tender_number || "N/A",
       sortable: true,
       width: "200px",
     },
     {
-      name: "PO Numbers",
+      name: "PO Number",
       selector: (row) => row.po_number || "N/A",
       sortable: true,
     },
   ];
   const columns2 = [
+    {
+      name: "Vendor Name",
+      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
+      sortable: true,
+      width: "350px",
+    },
+    {
+      name: "Total Days Delayed",
+      selector: (row) => row.DaysDelayed || "N/A",
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Total Purchase Value",
+      selector: (row) => row.purchase_value || "N/A",
+      sortable: true,
+    },
+    {
+      name: "Item",
+      selector: (row) => row.line_item_desc|| "N/A",
+      sortable: true,
+      width: "200px",
+    },
+    {
+      name: "Tender Number",
+      selector: (row) => row.tender_number || "N/A",
+      sortable: true,
+      width: "250px",
+    },
+    {
+      name: "PO Number",
+      selector: (row) => row.po_number || "N/A",
+      sortable: true,
+    },
+  ];
+  const columns3 = [
+    {
+      name: "Supplier invoice no.",
+      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
+      sortable: true,
+      width: "350px",
+    },
     {
       name: "Vendor Name",
       selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
@@ -197,55 +239,18 @@ function Dashboard({startDate,endDate}) {
       sortable: true,
     },
     {
-      name: "line_Item_Desc",
-      selector: (row) => row.line_item_desc|| "N/A",
-      sortable: true,
-      width: "200px",
-    },
-    {
-      name: "Tender Numbers",
-      selector: (row) => row.tender_number || "N/A",
-      sortable: true,
-      width: "250px",
-    },
-    {
-      name: "PO Numbers",
-      selector: (row) => row.po_number || "N/A",
-      sortable: true,
-    },
-  ];
-  const columns3 = [
-    {
-      name: "supplier invoice no.",
-      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
-      sortable: true,
-      width: "350px",
-    },
-    {
-      name: "Vendor Name",
-      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
-      sortable: true,
-      width: "350px",
-    },
-    {
-      name: "Total Days Delayed",
-      selector: (row) => row.days_delayed || "N/A",
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "line_Item_Desc",
+      name: "Item",
       selector: (row) => row.line_Item_Desc || "N/A",
       sortable: true,
     },
     {
-      name: "Tender Numbers",
+      name: "Tender Number",
       selector: (row) => row.tender_number || "N/A",
       sortable: true,
       width: "400px",
     },
     {
-      name: "PO Numbers",
+      name: "PO Number",
       selector: (row) => row.po_number || "N/A",
       sortable: true,
     },
@@ -341,7 +346,7 @@ function Dashboard({startDate,endDate}) {
         },
         title: {
           display: true,
-          text: "Purchase Order(count)",
+          text: "Purchase Order (count)",
         },
       },
       y: {
