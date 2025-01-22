@@ -310,7 +310,7 @@ function Dashboard({startDate,endDate}) {
         display: false, // Hide the legend
       },
       title: {
-        display: true,
+        display: false,
         text: "Departments and Purchase Values", // Title of the chart
       },
       tooltip: {
@@ -465,7 +465,7 @@ function Dashboard({startDate,endDate}) {
     setSategory(e.target.value);
   };
   return (
-    <div className="new5 mb-1" >
+    <div className="new5 mb-1" style={{ overflow: 'auto' }} >
       <div className="mb-1">
         {/* <h3>POs</h3> */}
         <div className="d-flex">

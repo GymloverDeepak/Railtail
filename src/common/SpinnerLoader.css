@@ -1,0 +1,13 @@
+.loading-spinner {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    position: fixed; /* Makes it overlay on the entire page */
+    top: 0; /* Aligns the spinner to the top */
+    left: 0; /* Aligns the spinner to the left */
+    width: 100vw; /* Full viewport width */
+    height: 100vh; /* Full viewport height */
+    background-color: rgba(255, 255, 255, 0.7); /* Optional: Adds a semi-transparent background */
+    z-index: 9999; /* Ensures the spinner is on top of other content */
+  }
+  

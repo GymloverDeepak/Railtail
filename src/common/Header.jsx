@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Profile from "../assets/img/profile-img.jpg";
+import logo from "../assets/img/logo.png";
 import Dashboard from "./Dashboard";
 import axios from "axios";
 import Modal from "./Modal";
@@ -31,11 +32,7 @@ function Header() {
       >
         <div className="topbar">
           <div className="d-flex align-items-center justify-content-between">
-            <a href="/" className="logo d-flex align-items-center">
-              {/* <img src={Profile} alt="" /> */}
-              <span className="d-none d-lg-block">Railtel</span>
-              {/* <span className="d-none d-lg-block">Dashboard</span> */}
-            </a>
+            <img src={logo} alt="" style={{height:"62px",width:"81px",borderRadius:"2px"}} />
           </div>
 
           {/* <nav className="header-nav ms-auto">

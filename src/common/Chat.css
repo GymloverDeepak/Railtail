@@ -1,5 +1,6 @@
 .modal-show {
     display: block;
+    overflow: auto; /* Allows scrolling */
   }
   
 .chat-container {
@@ -10,6 +11,7 @@
     background-color: #f8f9fa;
     display: flex;
     flex-direction: column;
+    scrollbar-width: none !important; 
 }
 
 .chat-bubble {
@@ -114,4 +116,3 @@
   .suggestion-item:hover {
     background-color: #e0e0e0; /* Change background on hover */
   }
-  
