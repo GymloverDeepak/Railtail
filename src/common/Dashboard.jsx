@@ -132,6 +132,15 @@ function Dashboard({startDate,endDate}) {
         console.error("Error fetching data", error);
       });
   };
+  const customStyles = {
+  header: {
+    style: {
+      color: '#012970', // Replace with your desired color code
+      fontSize: '17px',
+      // fontWeight: 'bold',
+    },
+  },
+};
   useEffect(() => {
     noReceived();
     poType();
@@ -183,7 +192,7 @@ function Dashboard({startDate,endDate}) {
       name: "Vendor Name",
       selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
       sortable: true,
-      width: "350px",
+      width: "250px",
     },
     {
       name: "Total Days Delayed",
@@ -217,9 +226,9 @@ function Dashboard({startDate,endDate}) {
   const columns3 = [
     {
       name: "Supplier invoice no.",
-      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
+      selector: (row) => row.supplier_inv_no || "No Vendor Name", // Display vendor name or fallback text
       sortable: true,
-      width: "350px",
+      width: "150px",
     },
     {
       name: "Vendor Name",
@@ -321,8 +330,8 @@ function Dashboard({startDate,endDate}) {
             // Format tooltip text
             return [
               `Department: ${department}`,
-              `Total Value: ₹${totalValue.toLocaleString()}`, // Display formatted total value
-              `Total Count: ${count.toLocaleString()}`, // Display formatted count
+              ` Value :- ₹${totalValue.toLocaleString()}`, // Display formatted total value
+              ` Count :- ${count.toLocaleString()}`, // Display formatted count
             ];
           },
         },
@@ -456,7 +465,7 @@ function Dashboard({startDate,endDate}) {
     setSategory(e.target.value);
   };
   return (
-    <div className="new5" >
+    <div className="new5 mb-1" >
       <div className="mb-1">
         {/* <h3>POs</h3> */}
         <div className="d-flex">
@@ -579,9 +588,9 @@ function Dashboard({startDate,endDate}) {
         </div>
       </div>
 
-      <div className=" d-flex ">
+      <div className=" d-flex mb-1 ">
         <div className="card p-3" style={{ width: "50%", height: "500px" }}>
-          <h3 style={{ fontSize: "20px", color: "#012970" }}>
+          <h3 style={{ fontSize: "17px", color: "#012970" }}>
             Purchases By Department
           </h3>
 
@@ -608,12 +617,12 @@ function Dashboard({startDate,endDate}) {
         <div className="card p-3" style={{ width: "50%", height: "500px" }}>
           {/* <h3></h3> */}
           <div>
-            <div className="d-flex align-items-center mb-2">
-              <div className="me-3" style={{ width: "33%" }}>
+            <div className="d-flex align-items-center ">
+              <div className="me-3" style={{ width: "25%" }}>
                 <label
                   htmlFor="category"
                   className="form-label"
-                  style={{ fontSize: "20px", color: "#012970" }}
+                  style={{ fontSize: "17px", color: "#012970" }}
                 >
                   Top 5 Analysis
                 </label>
@@ -622,6 +631,7 @@ function Dashboard({startDate,endDate}) {
                   className="form-select"
                   value={category}
                   onChange={handleChartTypeChange}
+                  style={{ fontSize: "14px",width:"70%" }}
                 >
                   <option value="top-vendors">Vendors</option>
                   <option value="top-tenders">Tenders</option>
@@ -644,7 +654,7 @@ function Dashboard({startDate,endDate}) {
           </div>
         </div>
       </div>
-      <div className="card">
+      <div className="card mb-1" style={{marginTop:"-22px"}}>
         <DataTable
           title="Vendors Delivery Performance"
           columns={columns}
@@ -652,9 +662,10 @@ function Dashboard({startDate,endDate}) {
           pagination
           paginationPerPage={5}
           highlightOnHover
+          customStyles={customStyles}
         />
       </div>
-      <div className="card">
+      <div className="card mb-1">
         <DataTable
           title="Delayed POs(Not delivered)"
           columns={columns2}
@@ -662,9 +673,10 @@ function Dashboard({startDate,endDate}) {
           pagination
           paginationPerPage={5}
           highlightOnHover
+          customStyles={customStyles}
         />
       </div>
-      <div className="card">
+      <div className="card mb-1">
         <DataTable
           title="Payment Performance"
           columns={columns3}
@@ -672,6 +684,7 @@ function Dashboard({startDate,endDate}) {
           pagination
           paginationPerPage={5}
           highlightOnHover
+          customStyles={customStyles}
         />
       </div>
     </div>
