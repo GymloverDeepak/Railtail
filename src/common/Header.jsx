@@ -9,12 +9,11 @@ function Header() {
   const [showBot, setShowBot] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const today = new Date().toISOString().split("T")[0];
   const handleStartDateChange = (e) => {
-    const selectedDate = e.target.value;
-    const today = new Date().toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
+    const selectedDate = e.target.value;// Today's date in YYYY-MM-DD format
 
     if (selectedDate > today) {
-      alert("Start date cannot be in the future.");
       return;
     }
 
@@ -25,13 +24,10 @@ function Header() {
 
     setStartDate(selectedDate);
   };
-
   const handleEndDateChange = (e) => {
     const selectedDate = e.target.value;
-    const today = new Date().toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
 
     if (selectedDate > today) {
-      alert("End date cannot be in the future.");
       return;
     }
 
@@ -144,6 +140,7 @@ function Header() {
               id="startDate"
               className="form-control me-3"
               value={startDate}
+              max={today}
               onChange={handleStartDateChange}
               style={{ width: "150px" }}
             />
@@ -158,6 +155,8 @@ function Header() {
               id="endDate"
               className="form-control me-3"
               value={endDate}
+              min={startDate}
+              max={today}
               onChange={handleEndDateChange}
               style={{ width: "150px" }}
             />
