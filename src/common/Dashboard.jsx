@@ -641,7 +641,7 @@ function Dashboard({ startDate, endDate }) {
                     {
                       label: "Purchase Value (All Departments)",
                       data,
-                      backgroundColor: labels.map(() => "#1976D2"),
+                      backgroundColor: Array.isArray(labels) ? labels.map(() => "#1976D2") : [], 
                     },
                   ],
                 }}
