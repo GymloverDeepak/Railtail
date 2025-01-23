@@ -136,14 +136,17 @@ function Header() {
               From
             </label>
             <input
-              type="date"
-              id="startDate"
-              className="form-control me-3"
-              value={startDate}
-              max={today}
-              onChange={handleStartDateChange}
-              style={{ width: "150px" }}
-            />
+                type="date"
+                id="startDate"
+                className="form-control me-3"
+                value={startDate}
+                max={today}
+                onChange={handleStartDateChange}
+                onFocus={handleStartDateChange} // Trigger when the calendar is opened
+                onClick={handleStartDateChange} // Optionally, also trigger on click
+                style={{ width: "150px" }}
+              />
+
             <label
               htmlFor="endDate"
               className="form-label me-2"

@@ -399,8 +399,9 @@ function Dashboard({ startDate, endDate }) {
   const { labels, data, sortedDepartments } = getBarChartData();
 
   const chartContainerStyle = {
-    height: `${Math.max(300, sortedDepartments.length * 25)}px`, // Adjust dynamically based on number of departments
+    height: `${Math.max(300, (sortedDepartments ? sortedDepartments.length : 0) * 25)}px`, // Check if sortedDepartments is defined
   };
+  
 
   const pieChartData = {
     labels:
@@ -462,14 +463,14 @@ function Dashboard({ startDate, endDate }) {
             return originalLabels.map((label, index) => {
               const datasetVisibility = chart.getDataVisibility(index); // Check visibility for the specific label index
               return {
-                text: label.length > 20 ? label.substring(0, 20) + "..." : label, // Truncate label to 20 characters if necessary
+                text:
+                  label.length > 20 ? label.substring(0, 20) + "..." : label, // Truncate label to 20 characters if necessary
                 fillStyle: chart.data.datasets[0].backgroundColor[index], // Get corresponding background color
                 hidden: !datasetVisibility, // Set hidden to the opposite of datasetVisibility to fix the issue
                 index: index, // Keep track of the label index
               };
             });
-          }
-          
+          },
         },
       },
       tooltip: {
@@ -495,235 +496,237 @@ function Dashboard({ startDate, endDate }) {
     setSategory(e.target.value);
   };
   return (
-    <div className="new5 mb-1" style={{ overflow: "auto" }}>
-      <div className="mb-1">
-        {/* <h3>POs</h3> */}
-        <div className="d-flex">
-          <div
-            className="card"
-            style={{
-              width: "33%",
-              height: "50px", // Reduced height
-              backgroundColor: "#f9f9f9",
-              margin: "10px",
-            }}
-          >
-            {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
-            <div className="d-flex">
-              <div style={{ width: "50%" }}>
-                <h5
+    <main>
+      <div className="new5 mb-1" style={{ overflow: "auto" }}>
+        <div className="mb-1">
+          {/* <h3>POs</h3> */}
+          <div className="d-flex">
+            <div
+              className="card"
+              style={{
+                width: "33%",
+                height: "50px", // Reduced height
+                backgroundColor: "#f9f9f9",
+                margin: "10px",
+              }}
+            >
+              {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
+              <div className="d-flex">
+                <div style={{ width: "50%" }}>
+                  <h5
+                    style={{
+                      fontSize: "12px",
+                      textAlign: "center",
+                      padding: "4px",
+                    }}
+                  >
+                    Blanket-Release POs
+                  </h5>
+                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                    {blanket ? blanket.count : "0"}
+                  </p>
+                </div>
+                <div
                   style={{
-                    fontSize: "12px",
-                    textAlign: "center",
+                    width: "50%",
+                    height: "48px",
                     padding: "4px",
+                    borderLeft: "1px solid #ddd",
                   }}
                 >
-                  Blanket-Release POs
-                </h5>
-                <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {blanket ? blanket.count : "0"}
-                </p>
+                  <h5
+                    style={{
+                      fontSize: "12px",
+                      textAlign: "center",
+                    }}
+                  >
+                    Standard POs
+                  </h5>
+                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                    {standard ? standard.count : "0"}
+                  </p>
+                </div>
               </div>
-              <div
-                style={{
-                  width: "50%",
-                  height: "48px",
-                  padding: "4px",
-                  borderLeft: "1px solid #ddd",
-                }}
-              >
-                <h5
+            </div>
+            <div
+              className="card "
+              style={{
+                width: "33%",
+                height: "50px", // Reduced height
+                backgroundColor: "#f9f9f9",
+                margin: "10px",
+              }}
+            >
+              {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>Po Status</h4> */}
+              <div className="d-flex">
+                <div style={{ width: "50%", padding: "5px" }}>
+                  <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                    Open POs
+                  </h5>
+                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                    {poStatusOpen ? poStatusOpen.count : "0"}
+                  </p>
+                </div>
+                <div
                   style={{
-                    fontSize: "12px",
-                    textAlign: "center",
+                    width: "50%",
+                    height: "48px",
+                    padding: "5px",
+                    borderLeft: "1px solid #ddd",
                   }}
                 >
-                  Standard POs
-                </h5>
-                <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {standard ? standard.count : "0"}
-                </p>
+                  <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                    Closed POs
+                  </h5>
+                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                    {poStatusClose ? poStatusClose.count : "0"}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-          <div
-            className="card "
-            style={{
-              width: "33%",
-              height: "50px", // Reduced height
-              backgroundColor: "#f9f9f9",
-              margin: "10px",
-            }}
-          >
-            {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>Po Status</h4> */}
-            <div className="d-flex">
-              <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px", textAlign: "center" }}>
-                  Open POs
-                </h5>
-                <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {poStatusOpen ? poStatusOpen.count : "0"}
-                </p>
-              </div>
-              <div
-                style={{
-                  width: "50%",
-                  height: "48px",
-                  padding: "5px",
-                  borderLeft: "1px solid #ddd",
-                }}
-              >
-                <h5 style={{ fontSize: "12px", textAlign: "center" }}>
-                  Closed POs
-                </h5>
-                <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {poStatusClose ? poStatusClose.count : "0"}
-                </p>
-              </div>
-            </div>
-          </div>
 
-          <div
-            className="card"
-            style={{
-              width: "33%",
-              height: "50px", // Reduced height
-              backgroundColor: "#f9f9f9",
-              margin: "10px",
-            }}
-          >
-            {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>
+            <div
+              className="card"
+              style={{
+                width: "33%",
+                height: "50px", // Reduced height
+                backgroundColor: "#f9f9f9",
+                margin: "10px",
+              }}
+            >
+              {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>
                Analyze POs
             </h4> */}
-            <div className="d-flex">
-              <div style={{ width: "50%", padding: "5px" }}>
-                <h5 style={{ fontSize: "12px", textAlign: "center" }}>
-                  On-time PO Line Items
-                </h5>
-                <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {analyzeOntime ? analyzeOntime.count : "0"}
-                </p>
+              <div className="d-flex">
+                <div style={{ width: "50%", padding: "5px" }}>
+                  <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                    On-time PO Line Items
+                  </h5>
+                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                    {analyzeOntime ? analyzeOntime.count : "0"}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    width: "50%",
+                    padding: "5px",
+                    height: "48px",
+                    borderLeft: "1px solid #ddd",
+                  }}
+                >
+                  <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                    Delayed PO Line Items
+                  </h5>
+                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                    {analyzeDelay ? analyzeDelay.count : "0"}
+                  </p>
+                </div>
               </div>
-              <div
-                style={{
-                  width: "50%",
-                  padding: "5px",
-                  height: "48px",
-                  borderLeft: "1px solid #ddd",
+            </div>
+          </div>
+        </div>
+
+        <div className=" d-flex mb-1 ">
+          <div className="card p-3" style={{ width: "50%", height: "500px" }}>
+            <h3 style={{ fontSize: "17px", color: "#012970" }}>
+              Purchases By Department
+            </h3>
+
+            <div style={{ height: "500px", marginTop: "10px" }}>
+              <Bar
+                style={chartContainerStyle}
+                data={{
+                  labels,
+                  datasets: [
+                    {
+                      label: "Purchase Value (All Departments)",
+                      data,
+                      backgroundColor: labels.map(() => "#1976D2"),
+                    },
+                  ],
                 }}
-              >
-                <h5 style={{ fontSize: "12px", textAlign: "center" }}>
-                  Delayed PO Line Items
-                </h5>
-                <p style={{ fontSize: "10px", textAlign: "center" }}>
-                  {analyzeDelay ? analyzeDelay.count : "0"}
-                </p>
+                options={{
+                  ...barChartOptions,
+                  maintainAspectRatio: false,
+                }}
+              />
+            </div>
+          </div>
+          <div className="card p-3" style={{ width: "50%", height: "500px" }}>
+            {/* <h3></h3> */}
+            <div>
+              <div className="d-flex align-items-center ">
+                <div className="me-3" style={{ width: "25%" }}>
+                  <label
+                    htmlFor="category"
+                    className="form-label"
+                    style={{ fontSize: "17px", color: "#012970" }}
+                  >
+                    Top 5 Analysis
+                  </label>
+                  <select
+                    id="category"
+                    className="form-select"
+                    value={category}
+                    onChange={handleChartTypeChange}
+                    style={{ fontSize: "14px", width: "70%" }}
+                  >
+                    <option value="top-vendors">Vendors</option>
+                    <option value="top-tenders">Tenders</option>
+                    <option value="top-projects">Projects</option>
+                    <option value="top-items">Items</option>
+                    <option value="top-departments">Departments</option>
+                  </select>
+                </div>
               </div>
+            </div>
+            <div style={{ height: "400px", marginTop: "20px" }}>
+              <Pie
+                data={pieChartData}
+                plugins={[ChartDataLabels]}
+                options={{
+                  ...pieChartOptions,
+                  maintainAspectRatio: false,
+                }}
+              />
             </div>
           </div>
         </div>
-      </div>
-
-      <div className=" d-flex mb-1 ">
-        <div className="card p-3" style={{ width: "50%", height: "500px" }}>
-          <h3 style={{ fontSize: "17px", color: "#012970" }}>
-            Purchases By Department
-          </h3>
-
-          <div style={{ height: "500px", marginTop: "10px" }}>
-            <Bar
-              style={chartContainerStyle}
-              data={{
-                labels,
-                datasets: [
-                  {
-                    label: "Purchase Value (All Departments)",
-                    data,
-                    backgroundColor: labels.map(() => "#1976D2"),
-                  },
-                ],
-              }}
-              options={{
-                ...barChartOptions,
-                maintainAspectRatio: false,
-              }}
-            />
-          </div>
+        <div className="card mb-1" style={{ marginTop: "-22px" }}>
+          <DataTable
+            title="Vendors Delivery Performance"
+            columns={columns}
+            data={performance || []}
+            pagination
+            paginationPerPage={5}
+            highlightOnHover
+            customStyles={customStyles}
+          />
         </div>
-        <div className="card p-3" style={{ width: "50%", height: "500px" }}>
-          {/* <h3></h3> */}
-          <div>
-            <div className="d-flex align-items-center ">
-              <div className="me-3" style={{ width: "25%" }}>
-                <label
-                  htmlFor="category"
-                  className="form-label"
-                  style={{ fontSize: "17px", color: "#012970" }}
-                >
-                  Top 5 Analysis
-                </label>
-                <select
-                  id="category"
-                  className="form-select"
-                  value={category}
-                  onChange={handleChartTypeChange}
-                  style={{ fontSize: "14px", width: "70%" }}
-                >
-                  <option value="top-vendors">Vendors</option>
-                  <option value="top-tenders">Tenders</option>
-                  <option value="top-projects">Projects</option>
-                  <option value="top-items">Items</option>
-                  <option value="top-departments">Departments</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div style={{ height: "400px", marginTop: "20px" }}>
-            <Pie
-              data={pieChartData}
-              plugins={[ChartDataLabels]}
-              options={{
-                ...pieChartOptions,
-                maintainAspectRatio: false,
-              }}
-            />
-          </div>
+        <div className="card mb-1">
+          <DataTable
+            title="Delayed POs(Not delivered)"
+            columns={columns2}
+            data={noData || []}
+            pagination
+            paginationPerPage={5}
+            highlightOnHover
+            customStyles={customStyles}
+          />
+        </div>
+        <div className="card mb-1">
+          <DataTable
+            title="Payment Performance"
+            columns={columns3}
+            data={payment || []}
+            pagination
+            paginationPerPage={5}
+            highlightOnHover
+            customStyles={customStyles}
+          />
         </div>
       </div>
-      <div className="card mb-1" style={{ marginTop: "-22px" }}>
-        <DataTable
-          title="Vendors Delivery Performance"
-          columns={columns}
-          data={performance || []}
-          pagination
-          paginationPerPage={5}
-          highlightOnHover
-          customStyles={customStyles}
-        />
-      </div>
-      <div className="card mb-1">
-        <DataTable
-          title="Delayed POs(Not delivered)"
-          columns={columns2}
-          data={noData || []}
-          pagination
-          paginationPerPage={5}
-          highlightOnHover
-          customStyles={customStyles}
-        />
-      </div>
-      <div className="card mb-1">
-        <DataTable
-          title="Payment Performance"
-          columns={columns3}
-          data={payment || []}
-          pagination
-          paginationPerPage={5}
-          highlightOnHover
-          customStyles={customStyles}
-        />
-      </div>
-    </div>
+    </main>
   );
 }
 
