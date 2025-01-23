@@ -168,7 +168,7 @@ function Header() {
               type="button"
               id="ask_buddy"
               onClick={() => setShowBot(!showBot)}
-              style={{ height: "38px", width: "130px" }}
+              style={{ height: "38px", width: "130px",marginRight: "9px" }}
             >
               My Assistant
             </button>
