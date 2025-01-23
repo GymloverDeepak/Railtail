@@ -9,6 +9,39 @@ function Header() {
   const [showBot, setShowBot] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const handleStartDateChange = (e) => {
+    const selectedDate = e.target.value;
+    const today = new Date().toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
+
+    if (selectedDate > today) {
+      alert("Start date cannot be in the future.");
+      return;
+    }
+
+    if (endDate && selectedDate > endDate) {
+      alert("Start date cannot be later than the end date.");
+      return;
+    }
+
+    setStartDate(selectedDate);
+  };
+
+  const handleEndDateChange = (e) => {
+    const selectedDate = e.target.value;
+    const today = new Date().toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
+
+    if (selectedDate > today) {
+      alert("End date cannot be in the future.");
+      return;
+    }
+
+    if (startDate && selectedDate < startDate) {
+      alert("End date cannot be earlier than the start date.");
+      return;
+    }
+
+    setEndDate(selectedDate);
+  };
   const defaultDate = () => {
     axios
       .get(`${envAPI_URL}/default-dates`)
@@ -111,7 +144,7 @@ function Header() {
               id="startDate"
               className="form-control me-3"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={handleStartDateChange}
               style={{ width: "150px" }}
             />
             <label
@@ -125,7 +158,7 @@ function Header() {
               id="endDate"
               className="form-control me-3"
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              onChange={handleEndDateChange}
               style={{ width: "150px" }}
             />
             <button
