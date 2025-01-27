@@ -90,6 +90,7 @@ function Dashboard({ startDate, endDate }) {
       })
       .catch((error) => {
         console.error("Error fetching data", error);
+        setCategoryData([]);
       });
   };
   const vendorPerformance = () => {
@@ -102,6 +103,7 @@ function Dashboard({ startDate, endDate }) {
       })
       .catch((error) => {
         console.error("Error fetching data", error);
+        setPerformance([]);
       });
   };
   const noReceived = () => {
@@ -114,6 +116,7 @@ function Dashboard({ startDate, endDate }) {
       })
       .catch((error) => {
         console.error("Error fetching data", error);
+        setNoData([]);
       });
   };
   const purchasesDept = () => {
@@ -138,6 +141,7 @@ function Dashboard({ startDate, endDate }) {
       })
       .catch((error) => {
         console.error("Error fetching data", error);
+        setPayment([]);
       });
   };
   const customStyles = {
@@ -416,7 +420,7 @@ function Dashboard({ startDate, endDate }) {
                 item.Department
             )
             .slice(0, 5) // Limit to 5 labels for balance
-        : ["Test 1", "Test 2", "Test 3", "Test 4", "Test 5"], // Fallback labels
+        : ["", "", "", "", ""], // Fallback labels
 
     datasets: [
       {
@@ -438,7 +442,7 @@ function Dashboard({ startDate, endDate }) {
                   )
                   .slice(0, 5); // Limit to 5 data points
               })()
-            : [20, 20, 20, 20, 20], // Fallback percentages if no categoryData
+            : [0, 0, 0, 0, 0], // Fallback percentages if no categoryData
         backgroundColor: [
           "#87CEEB",
           "#ADD8E6",

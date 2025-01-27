@@ -10,9 +10,7 @@ function Modal({ isOpen, onClose, id = "" }) {
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [task, setTask] = useState("");
   const [botChat, setBotChat] = useState([
-    { type: "bot", text: "Hello! How can I assist you today?" },
-    { type: "user", text: "I need some help with my project." },
-    { type: "bot", text: "Sure, please share the details." },
+    { type: "", text: "" }
   ]);
 
   const suggestions = [
