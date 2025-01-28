@@ -14,8 +14,8 @@ function Modal({ isOpen, onClose, id = "" }) {
   ]);
 
   const suggestions = [
-    "count of unique vendors.",
-    "Provide summary about the data inserted in 100 words.",
+    "count of vendors",
+    "Provide summary about the data in 100 words",
     "Name of top vendor",
     "Highest value Tender no",
     "Highest value PO",
