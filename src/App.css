@@ -21,4 +21,20 @@ margin-Top: 4rem;
   justify-content: space-between;
   width: 100%;
 }
-
+.tabhead3 {
+  font-size: 15px;
+  text-align: center;
+  padding-top: 1px;
+  font-weight: bold;
+  color: #012970;
+}
+.tabData1{
+  font-size: 12px; 
+  text-align : center;
+}
+.section2{
+  width: 50%;
+  height: 48px;
+  padding: 1px;
+  border-left: 1px solid rgb(221, 221, 221);
+}

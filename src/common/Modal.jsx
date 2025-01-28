@@ -4,7 +4,6 @@ import axios from "axios";
 import SpinnerLoader from "./SpinnerLoader";
 
 function Modal({ isOpen, onClose, id = "" }) {
-  const [message, setMessage] = useState("");
   const envAPI_URL = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
@@ -24,9 +23,9 @@ function Modal({ isOpen, onClose, id = "" }) {
   const chatContainerRef = useRef(null);
 
   const handleSend = () => {
-    if (!task.trim()) return; // Prevent sending empty messages
+    if (!task.trim()) return;
     chatBotResponse(task);
-    setTask(""); // Clear the input after sending
+    setTask(""); 
   };
 
   const chatBotResponse = (task) => {
@@ -47,14 +46,18 @@ function Modal({ isOpen, onClose, id = "" }) {
       })
       .catch((error) => {
         console.error("Error fetching data", error);
-        setLoading(false); // Stop loading on error
+        setBotChat([
+          ...botChat,
+          { type: "user", text: task },
+          { type: "bot", text: "Unable to understand the query" },
+        ]);
+        setLoading(false); 
       });
   };
   const handleSuggestionClick = (suggestion) => {
     setTask(suggestion);
     chatBotResponse(suggestion);
   };
-  // Scroll to the bottom of the chat container when new messages are added
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;

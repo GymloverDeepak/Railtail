@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Bar, Pie } from "react-chartjs-2";
-import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
   Chart as ChartJS,
@@ -15,6 +14,9 @@ import {
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 import axios from "axios";
+import DelayedPos from "./DelayedPos";
+import VendorPerformence from "./VendorPerformence";
+import PaymentPerformence from "./PaymentPerformence";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -144,15 +146,6 @@ function Dashboard({ startDate, endDate }) {
         setPayment([]);
       });
   };
-  const customStyles = {
-    header: {
-      style: {
-        color: "#012970", // Replace with your desired color code
-        fontSize: "17px",
-        // fontWeight: 'bold',
-      },
-    },
-  };
   useEffect(() => {
     noReceived();
     poType();
@@ -163,117 +156,7 @@ function Dashboard({ startDate, endDate }) {
     purchasesDept();
     paymentPerformance();
   }, [startDate, endDate, category]);
-  const columns = [
-    {
-      name: "Vendor Name",
-      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
-      sortable: true,
-      width: "350px",
-    },
-    {
-      name: "Total Days Delayed",
-      selector: (row) => row.DaysDelayed || "N/A",
-      sortable: true,
-    },
-    {
-      name: "Total Purchase Value",
-      selector: (row) => row.purchase_value || "N/A",
-      sortable: true,
-    },
-    {
-      name: "Item",
-      selector: (row) => row.line_item_desc || "N/A",
-      sortable: true,
-      width: "350px",
-    },
-    {
-      name: "Tender Number",
-      selector: (row) => row.tender_number || "N/A",
-      sortable: true,
-      width: "250px",
-    },
-    {
-      name: "PO Number",
-      selector: (row) => row.po_number || "N/A",
-      sortable: true,
-    },
-  ];
-  const columns2 = [
-    {
-      name: "Vendor Name",
-      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
-      sortable: true,
-      width: "350px",
-    },
-    {
-      name: "Total Days Delayed",
-      selector: (row) => row.DaysDelayed || "N/A",
-      sortable: true,
-    },
-    {
-      name: "Total Purchase Value",
-      selector: (row) => row.purchase_value || "N/A",
-      sortable: true,
-    },
-    {
-      name: "Item",
-      selector: (row) => row.line_item_desc || "N/A",
-      sortable: true,
-      width: "300px",
-    },
-    {
-      name: "Tender Number",
-      selector: (row) => row.tender_number || "N/A",
-      sortable: true,
-      width: "250px",
-    },
-    {
-      name: "PO Number",
-      selector: (row) => row.po_number || "N/A",
-      sortable: true,
-    },
-  ];
-  const columns3 = [
-    {
-      name: "Supplier invoice no.",
-      selector: (row) => row.supplier_inv_no || "No Vendor Name", // Display vendor name or fallback text
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "Vendor Name",
-      selector: (row) => row.vendor_name || "No Vendor Name", // Display vendor name or fallback text
-      sortable: true,
-      width: "350px",
-    },
-    {
-      name: "Total Days Delayed",
-      selector: (row) => row.days_delayed || "N/A",
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "Total Purchase Value",
-      selector: (row) => row.purchase_value || "N/A",
-      sortable: true,
-    },
-    {
-      name: "Item",
-      selector: (row) => row.line_Item_Desc || "N/A",
-      sortable: true,
-    },
-    {
-      name: "Tender Number",
-      selector: (row) => row.tender_number || "N/A",
-      sortable: true,
-      width: "400px",
-    },
-    {
-      name: "PO Number",
-      selector: (row) => row.po_number || "N/A",
-      sortable: true,
-    },
-  ];
+ 
   const getBarChartData = () => {
     if (!purchaseData || !Array.isArray(purchaseData)) return {};
 
@@ -516,17 +399,11 @@ function Dashboard({ startDate, endDate }) {
             >
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
               <div className="d-flex">
-                <div style={{ width: "50%" }}>
-                  <h5
-                    style={{
-                      fontSize: "12px",
-                      textAlign: "center",
-                      padding: "4px",
-                    }}
-                  >
+                <div  className="section2">
+                  <h5 className="tabhead3">
                     Blanket-Release POs
                   </h5>
-                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                  <p className="tabData1">
                     {blanket ? blanket.count : "0"}
                   </p>
                 </div>
@@ -538,15 +415,10 @@ function Dashboard({ startDate, endDate }) {
                     borderLeft: "1px solid #ddd",
                   }}
                 >
-                  <h5
-                    style={{
-                      fontSize: "12px",
-                      textAlign: "center",
-                    }}
-                  >
+                  <h5 className="tabhead3">
                     Standard POs
                   </h5>
-                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                  <p className="tabData1">
                     {standard ? standard.count : "0"}
                   </p>
                 </div>
@@ -563,26 +435,21 @@ function Dashboard({ startDate, endDate }) {
             >
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>Po Status</h4> */}
               <div className="d-flex">
-                <div style={{ width: "50%", padding: "5px" }}>
-                  <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                <div  className="section2">
+                <h5 className="tabhead3">
                     Open POs
                   </h5>
-                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                  <p className="tabData1">
                     {poStatusOpen ? poStatusOpen.count : "0"}
                   </p>
                 </div>
                 <div
-                  style={{
-                    width: "50%",
-                    height: "48px",
-                    padding: "5px",
-                    borderLeft: "1px solid #ddd",
-                  }}
+                 className="section2"
                 >
-                  <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                  <h5 className="tabhead3">
                     Closed POs
                   </h5>
-                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                  <p className="tabData1">
                     {poStatusClose ? poStatusClose.count : "0"}
                   </p>
                 </div>
@@ -602,26 +469,21 @@ function Dashboard({ startDate, endDate }) {
                Analyze POs
             </h4> */}
               <div className="d-flex">
-                <div style={{ width: "50%", padding: "5px" }}>
-                  <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                <div  className="section2">
+                <h5 className="tabhead3">
                     On-time PO Line Items
                   </h5>
-                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                  <p className="tabData1">
                     {analyzeOntime ? analyzeOntime.count : "0"}
                   </p>
                 </div>
                 <div
-                  style={{
-                    width: "50%",
-                    padding: "5px",
-                    height: "48px",
-                    borderLeft: "1px solid #ddd",
-                  }}
+                 className="section2"
                 >
-                  <h5 style={{ fontSize: "12px", textAlign: "center" }}>
+                 <h5 className="tabhead3">
                     Delayed PO Line Items
                   </h5>
-                  <p style={{ fontSize: "10px", textAlign: "center" }}>
+                  <p className="tabData1">
                     {analyzeDelay ? analyzeDelay.count : "0"}
                   </p>
                 </div>
@@ -697,38 +559,15 @@ function Dashboard({ startDate, endDate }) {
           </div>
         </div>
         <div className="card mb-1" style={{ marginTop: "-22px" }}>
-          <DataTable
-            title="Vendors Delivery Performance"
-            columns={columns}
-            data={performance || []}
-            pagination
-            paginationPerPage={5}
-            highlightOnHover
-            customStyles={customStyles}
-          />
+      <VendorPerformence performance={performance}/>
         </div>
         <div className="card mb-1">
-          <DataTable
-            title="Delayed POs(Not delivered)"
-            columns={columns2}
-            data={noData || []}
-            pagination
-            paginationPerPage={5}
-            highlightOnHover
-            customStyles={customStyles}
-          />
+       <DelayedPos noData={noData}/>
         </div>
         <div className="card mb-1">
-          <DataTable
-            title="Payment Performance"
-            columns={columns3}
-            data={payment || []}
-            pagination
-            paginationPerPage={5}
-            highlightOnHover
-            customStyles={customStyles}
-          />
+      <PaymentPerformence payment={payment}/>
         </div>
+        
       </div>
     </main>
   );

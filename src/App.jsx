@@ -6,10 +6,7 @@ import Main from './common/Main'
 function App() {
   return (
     <>
-      <Header />
-      {/* <SiderBar /> */}
-      {/* <Main >
-      </Main> */}
+      <Header/>
     </>
   )
 }
