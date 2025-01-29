@@ -1,6 +1,8 @@
 import React from 'react'
 import DataTable from "react-data-table-component";
 import * as XLSX from "xlsx";
+// import { RiFileExcel2Line } from "react-icons/ri";
+import excelLogo from "../assets/img/excelLogo.png";
 function DelayedPos({noData}) {
     const columns2 = [
         {
@@ -65,18 +67,16 @@ function DelayedPos({noData}) {
             Delayed POs(Not delivered)
             </a>
             <button
-              onClick={handleDownloadExcel}
-              style={{
-                padding: "5px 15px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Download Excel
-            </button>
+                  onClick={handleDownloadExcel}
+                  style={{
+                    color: "white",
+                    border: "none",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                   <img src={excelLogo} alt="Excel" width="50px" height="50px" />
+                </button>
           </div>
         }
     columns={columns2}

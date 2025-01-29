@@ -2,6 +2,8 @@ import React from "react";
 import { Modal, Button ,Spinner} from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import * as XLSX from "xlsx";
+// import { RiFileExcel2Line } from "re/act-icons/ri";
+import excelLogo from "../assets/img/excelLogo.png";
 const POsModal = ({ show, handleClose, posTitle,loading,posData}) => {
   const columns = [
     {
@@ -86,17 +88,16 @@ const POsModal = ({ show, handleClose, posTitle,loading,posData}) => {
                 <a style={{ fontSize: "18px", fontWeight: "bold" }}>{posTitle}</a>
                 <button
                   onClick={handleDownloadExcel}
-                  disabled={loading} // Disable when loading
+                  disabled={loading}
                   style={{
-                    padding: "5px 15px",
-                    backgroundColor: loading ? "#ccc" : "#4CAF50",
                     color: "white",
                     border: "none",
-                    borderRadius: "5px",
                     cursor: loading ? "not-allowed" : "pointer",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
-                  Download Excel
+                   <img src={excelLogo} alt="Excel" width="50px" height="50px" />
                 </button>
               </div>
             }
