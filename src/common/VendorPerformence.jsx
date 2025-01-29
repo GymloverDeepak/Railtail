@@ -48,9 +48,6 @@ function VendorPerformance({ performance }) {
     },
   };
 
-  const handleTitleClick = () => {
-    console.log("Title clicked");
-  };
 
   // Function to handle downloading Excel file
   const handleDownloadExcel = () => {
@@ -70,7 +67,7 @@ function VendorPerformance({ performance }) {
       <DataTable
         title={
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <a onClick={handleTitleClick} style={{ fontSize: "18px", fontWeight: "bold" }}>
+            <a style={{ fontSize: "18px", fontWeight: "bold" }}>
               Vendors Delivery Performance
             </a>
             <button

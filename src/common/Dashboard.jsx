@@ -17,6 +17,7 @@ import axios from "axios";
 import DelayedPos from "./DelayedPos";
 import VendorPerformence from "./VendorPerformence";
 import PaymentPerformence from "./PaymentPerformence";
+import POsModal from "./PosModel";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -31,6 +32,7 @@ ChartJS.register(
 function Dashboard({ startDate, endDate }) {
   const envAPI_URL = import.meta.env.VITE_API_URL;
   const [category, setSategory] = useState("top-vendors");
+  const [showModal, setShowModal] = useState(false);
   const [standard, setStandard] = useState([]);
   const [payment, setPayment] = useState([]);
   const [blanket, setBlanket] = useState([]);
@@ -387,13 +389,16 @@ function Dashboard({ startDate, endDate }) {
       <div className="new5 mb-1" style={{ overflow: "auto" }}>
         <div className="mb-1">
           {/* <h3>POs</h3> */}
-          <div className="d-flex">
+          <div className="d-flex"
+        style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}
+        onClick={() => setShowModal(true)}>
+          
             <div
               className="card"
               style={{
                 width: "33%",
                 height: "50px", // Reduced height
-                backgroundColor: "#f9f9f9",
+                backgroundColor: "#E0FFFF",
                 margin: "10px",
               }}
             >
@@ -429,7 +434,7 @@ function Dashboard({ startDate, endDate }) {
               style={{
                 width: "33%",
                 height: "50px", // Reduced height
-                backgroundColor: "#f9f9f9",
+                backgroundColor: "#E0FFFF",
                 margin: "10px",
               }}
             >
@@ -461,7 +466,7 @@ function Dashboard({ startDate, endDate }) {
               style={{
                 width: "33%",
                 height: "50px", // Reduced height
-                backgroundColor: "#f9f9f9",
+                backgroundColor: "#E0FFFF",
                 margin: "10px",
               }}
             >
@@ -491,7 +496,11 @@ function Dashboard({ startDate, endDate }) {
             </div>
           </div>
         </div>
-
+            <POsModal
+            show={showModal}
+            handleClose={() => setShowModal(false)}
+            blanket={blanket}
+          />
         <div className=" d-flex mb-1 ">
           <div className="card p-3" style={{ width: "50%", height: "500px" }}>
             <h3 style={{ fontSize: "17px", color: "#012970" }}>
