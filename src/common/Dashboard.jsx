@@ -35,6 +35,7 @@ function Dashboard({ startDate, endDate }) {
   const [showModal, setShowModal] = useState(false);
   const [standard, setStandard] = useState([]);
   const [payment, setPayment] = useState([]);
+  const [posTitle,setPosTitle]= useState("")
   const [blanket, setBlanket] = useState([]);
   const [noData, setNoData] = useState([]);
   const [analyzeDelay, setAnalyzeDelay] = useState([]);
@@ -384,14 +385,18 @@ function Dashboard({ startDate, endDate }) {
   const handleChartTypeChange = (e) => {
     setSategory(e.target.value);
   };
+  const posHandler = (item) => {
+    setShowModal(true)
+    setPosTitle(item)
+
+    console.log("item",item)
+  }
   return (
     <main>
       <div className="new5 mb-1" style={{ overflow: "auto" }}>
         <div className="mb-1">
           {/* <h3>POs</h3> */}
-          <div className="d-flex"
-        style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}
-        onClick={() => setShowModal(true)}>
+      <div className="d-flex"  style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}>
           
             <div
               className="card"
@@ -405,7 +410,8 @@ function Dashboard({ startDate, endDate }) {
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
               <div className="d-flex">
                 <div  className="section2">
-                  <h5 className="tabhead3">
+                  <h5 className="tabhead3"
+                   onClick={() => posHandler("Blanket-Release POs ttttt")}>
                     Blanket-Release POs
                   </h5>
                   <p className="tabData1">
@@ -420,7 +426,7 @@ function Dashboard({ startDate, endDate }) {
                     borderLeft: "1px solid #ddd",
                   }}
                 >
-                  <h5 className="tabhead3">
+                  <h5 className="tabhead3"  onClick={()=>posHandler("Standard POs")}>
                     Standard POs
                   </h5>
                   <p className="tabData1">
@@ -441,7 +447,7 @@ function Dashboard({ startDate, endDate }) {
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>Po Status</h4> */}
               <div className="d-flex">
                 <div  className="section2">
-                <h5 className="tabhead3">
+                <h5 className="tabhead3"  onClick={()=>posHandler("Open POs")}>
                     Open POs
                   </h5>
                   <p className="tabData1">
@@ -451,7 +457,7 @@ function Dashboard({ startDate, endDate }) {
                 <div
                  className="section2"
                 >
-                  <h5 className="tabhead3">
+                  <h5 className="tabhead3"  onClick={()=>posHandler(" Closed POs")}>
                     Closed POs
                   </h5>
                   <p className="tabData1">
@@ -475,7 +481,7 @@ function Dashboard({ startDate, endDate }) {
             </h4> */}
               <div className="d-flex">
                 <div  className="section2">
-                <h5 className="tabhead3">
+                <h5 className="tabhead3"  onClick={()=>posHandler("On-time PO Line Items")}>
                     On-time PO Line Items
                   </h5>
                   <p className="tabData1">
@@ -485,7 +491,7 @@ function Dashboard({ startDate, endDate }) {
                 <div
                  className="section2"
                 >
-                 <h5 className="tabhead3">
+                 <h5 className="tabhead3"  onClick={()=>posHandler("Delayed PO Line Items")}>
                     Delayed PO Line Items
                   </h5>
                   <p className="tabData1">
@@ -499,7 +505,7 @@ function Dashboard({ startDate, endDate }) {
             <POsModal
             show={showModal}
             handleClose={() => setShowModal(false)}
-            blanket={blanket}
+            posTitle={posTitle}
           />
         <div className=" d-flex mb-1 ">
           <div className="card p-3" style={{ width: "50%", height: "500px" }}>
