@@ -14,9 +14,12 @@ const Piechart = ({ categoryData }) => {
           item.line_Item_Desc ||
           item.Department ||
           "Unknown",
-          parseFloat(item.percentage) || 0, // Use provided percentage value
+          {
+            v: parseFloat(item.percentage) || 0, // Percentage value
+            f: `(${item.line_Item_Value_With_Tax})`, // Format for tooltip
+          },
         ])
-      : [["No Data", 1]]; // Default fallback if no data is available
+      : [["No Data", { v: 1, f: "No Data (0)" }]]; // Default fallback if no data is available
 
   // Add header row for Google Charts
   const data = [["Category", "Percentage"], ...transformedData];
@@ -26,10 +29,7 @@ const Piechart = ({ categoryData }) => {
     title: "",
     is3D: true, // Enables 3D view
     pieSliceText: "percentage", // Show percentage inside the slice
-    tooltip: {
-      trigger: "focus",
-      text: "both", // Show actual value and percentage
-    },
+    tooltip: { isHtml: true }, // Allow formatted tooltips
     slices: explodedSlices.reduce((acc, index) => {
       acc[index] = { offset: 0.1 }; // Adjust explosion distance
       return acc;
