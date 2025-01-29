@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Bar, Pie } from "react-chartjs-2";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Piechart from "./Piechart";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -45,7 +46,8 @@ function Dashboard({ startDate, endDate }) {
   const [performance, setPerformance] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [purchaseData, setPurchaseData] = useState([]);
-
+  const [posData,setPosData]=useState([])
+ const [loading,setLoading] = useState()
   const poType = () => {
     axios
       .get(
@@ -385,18 +387,31 @@ function Dashboard({ startDate, endDate }) {
   const handleChartTypeChange = (e) => {
     setSategory(e.target.value);
   };
-  const posHandler = (item) => {
+  const posHandler = (item,key) => {
     setShowModal(true)
+    setLoading(true)
     setPosTitle(item)
-
-    console.log("item",item)
+    axios
+      .get(
+        `${envAPI_URL}/${key}start_date=${startDate}&end_date=${endDate}`
+      )
+      .then((response) => {
+        setLoading(false)
+        setPosData(response.data);
+        console.log("response.data",response.data)
+      })
+      .catch((error) => {
+        console.error("Error fetching data", error);
+        setPosData([]);
+        setLoading(false)
+      });
   }
   return (
     <main>
       <div className="new5 mb-1" style={{ overflow: "auto" }}>
         <div className="mb-1">
           {/* <h3>POs</h3> */}
-      <div className="d-flex"  style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}>
+      <div className="d-flex"  style={{ cursor: "pointer", color: "blue", }}>
           
             <div
               className="card"
@@ -410,8 +425,8 @@ function Dashboard({ startDate, endDate }) {
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
               <div className="d-flex">
                 <div  className="section2">
-                  <h5 className="tabhead3"
-                   onClick={() => posHandler("Blanket-Release POs ttttt")}>
+                  <h5 className="tabhead3" style={{textDecoration: "underline"}}
+                   onClick={() => posHandler("Blanket-Release POs","get-po-type-data?po_type=BLANKET_RELEASE&")}>
                     Blanket-Release POs
                   </h5>
                   <p className="tabData1">
@@ -426,7 +441,7 @@ function Dashboard({ startDate, endDate }) {
                     borderLeft: "1px solid #ddd",
                   }}
                 >
-                  <h5 className="tabhead3"  onClick={()=>posHandler("Standard POs")}>
+                  <h5 className="tabhead3" style={{textDecoration: "underline"}}  onClick={()=>posHandler("Standard POs","get-po-type-data?po_type=STANDARD&")}>
                     Standard POs
                   </h5>
                   <p className="tabData1">
@@ -447,7 +462,7 @@ function Dashboard({ startDate, endDate }) {
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>Po Status</h4> */}
               <div className="d-flex">
                 <div  className="section2">
-                <h5 className="tabhead3"  onClick={()=>posHandler("Open POs")}>
+                <h5 className="tabhead3"  style={{textDecoration: "underline"}} onClick={()=>posHandler("Open POs","get-po-status-data?po_status=OPEN&")}>
                     Open POs
                   </h5>
                   <p className="tabData1">
@@ -457,7 +472,7 @@ function Dashboard({ startDate, endDate }) {
                 <div
                  className="section2"
                 >
-                  <h5 className="tabhead3"  onClick={()=>posHandler(" Closed POs")}>
+                  <h5 className="tabhead3"  style={{textDecoration: "underline"}} onClick={()=>posHandler(" Closed POs","get-po-status-data?po_status=CLOSE&")}>
                     Closed POs
                   </h5>
                   <p className="tabData1">
@@ -481,7 +496,7 @@ function Dashboard({ startDate, endDate }) {
             </h4> */}
               <div className="d-flex">
                 <div  className="section2">
-                <h5 className="tabhead3"  onClick={()=>posHandler("On-time PO Line Items")}>
+                <h5 className="tabhead3" style={{textDecoration: "underline"}} onClick={()=>posHandler("On-time PO Line Items","get-po-delivery-data?delivery_status=ontime&")}>
                     On-time PO Line Items
                   </h5>
                   <p className="tabData1">
@@ -491,7 +506,7 @@ function Dashboard({ startDate, endDate }) {
                 <div
                  className="section2"
                 >
-                 <h5 className="tabhead3"  onClick={()=>posHandler("Delayed PO Line Items")}>
+                 <h5 className="tabhead3" style={{textDecoration: "underline"}} onClick={()=>posHandler("Delayed PO Line Items","get-po-delivery-data?delivery_status=delayed&")}>
                     Delayed PO Line Items
                   </h5>
                   <p className="tabData1">
@@ -506,6 +521,8 @@ function Dashboard({ startDate, endDate }) {
             show={showModal}
             handleClose={() => setShowModal(false)}
             posTitle={posTitle}
+            loading={loading}
+            posData={posData}
           />
         <div className=" d-flex mb-1 ">
           <div className="card p-3" style={{ width: "50%", height: "500px" }}>
@@ -562,14 +579,15 @@ function Dashboard({ startDate, endDate }) {
               </div>
             </div>
             <div style={{ height: "400px", marginTop: "20px" }}>
-              <Pie
+              {/* <Pie
                 data={pieChartData}
                 plugins={[ChartDataLabels]}
                 options={{
                   ...pieChartOptions,
                   maintainAspectRatio: false,
                 }}
-              />
+              /> */}
+              <Piechart categoryData={categoryData}/>
             </div>
           </div>
         </div>
@@ -582,7 +600,6 @@ function Dashboard({ startDate, endDate }) {
         <div className="card mb-1">
       <PaymentPerformence payment={payment}/>
         </div>
-        
       </div>
     </main>
   );
