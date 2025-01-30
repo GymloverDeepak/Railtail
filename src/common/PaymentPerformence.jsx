@@ -79,7 +79,8 @@ function PaymentPerformence({payment}) {
                     border: "none",
                     display: "flex",
                     alignItems: "center",
-                    backgroundColor:"#114f11"
+                    backgroundColor:"#114f11",
+                    borderRadius: "5px"
                   }}
                 >
                   {/* <img src={excelLogo} alt="Excel" width="50px" height="50px" /> */}

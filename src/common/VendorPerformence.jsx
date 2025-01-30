@@ -78,7 +78,8 @@ function VendorPerformance({ performance }) {
                     border: "none",
                     display: "flex",
                     alignItems: "center",
-                    backgroundColor:"#114f11"
+                    backgroundColor:"#114f11",
+                    borderRadius: "5px"
                   }}
                 >
                   <RiFileExcel2Line size={20} />
