@@ -496,7 +496,7 @@ function Dashboard({ startDate, endDate }) {
             </h4> */}
               <div className="d-flex">
                 <div  className="section2">
-                <h5 className="tabhead3" style={{textDecoration: "underline"}} onClick={()=>posHandler("On-time PO Line Items","get-po-delivery-data?delivery_status=ontime&")}>
+                <h5 className="tabhead3" style={{textDecoration: "underline"}} onClick={()=>posHandler("On-time PO Line Items","get-po-data?status=ontime&")}>
                     On-time PO Line Items
                   </h5>
                   <p className="tabData1">
@@ -506,7 +506,7 @@ function Dashboard({ startDate, endDate }) {
                 <div
                  className="section2"
                 >
-                 <h5 className="tabhead3" style={{textDecoration: "underline"}} onClick={()=>posHandler("Delayed PO Line Items","get-po-delivery-data?delivery_status=delayed&")}>
+                 <h5 className="tabhead3" style={{textDecoration: "underline"}} onClick={()=>posHandler("Delayed PO Line Items","get-po-data?status=delayed&")}>
                     Delayed PO Line Items
                   </h5>
                   <p className="tabData1">
