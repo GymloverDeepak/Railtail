@@ -8,9 +8,7 @@ function Modal({ isOpen, onClose, id = "" }) {
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [task, setTask] = useState("");
-  const [botChat, setBotChat] = useState([
-    { type: "", text: "" }
-  ]);
+  const [botChat, setBotChat] = useState([{ type: "", text: "" }]);
 
   const suggestions = [
     "count of vendors",
@@ -25,7 +23,7 @@ function Modal({ isOpen, onClose, id = "" }) {
   const handleSend = () => {
     if (!task.trim()) return;
     chatBotResponse(task);
-    setTask(""); 
+    setTask("");
   };
 
   const chatBotResponse = (task) => {
@@ -51,13 +49,15 @@ function Modal({ isOpen, onClose, id = "" }) {
           { type: "user", text: task },
           { type: "bot", text: "Unable to understand the query" },
         ]);
-        setLoading(false); 
+        setLoading(false);
       });
   };
+
   const handleSuggestionClick = (suggestion) => {
     setTask(suggestion);
     chatBotResponse(suggestion);
   };
+
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -89,13 +89,16 @@ function Modal({ isOpen, onClose, id = "" }) {
               </button>
             </div>
 
-            <div
-              ref={chatContainerRef}
-              className="modal-body chat-container d-flex flex-column"
-            >
+            <div ref={chatContainerRef} className="modal-body chat-container d-flex flex-column">
               {botChat.map((chat, index) => (
-                <div key={index} className={`chat-bubble chat-${chat.type}`}>
-                  {chat.text}
+                <div
+                  key={index}
+                  className={`chat-bubble chat-${chat.type}`}
+                  {...(chat.type === "bot"
+                    ? { dangerouslySetInnerHTML: { __html: chat.text } }
+                    : {})}
+                >
+                  {chat.type !== "bot" ? chat.text : null}
                 </div>
               ))}
             </div>
@@ -103,11 +106,7 @@ function Modal({ isOpen, onClose, id = "" }) {
             {showSuggestions && (
               <div className="suggestions-container">
                 {suggestions.map((suggestion, index) => (
-                  <div
-                    key={index}
-                    className="suggestion-item"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
+                  <div key={index} className="suggestion-item" onClick={() => handleSuggestionClick(suggestion)}>
                     {suggestion}
                   </div>
                 ))}
