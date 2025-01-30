@@ -77,7 +77,7 @@ function DelayedPos({noData}) {
                   }}
                 >
                    {/* <img src={excelLogo} alt="Excel" width="50px" height="50px" /> */}
-                   <RiFileExcel2Line size={30} />
+                   <RiFileExcel2Line size={20} />
                 </button>
           </div>
         }

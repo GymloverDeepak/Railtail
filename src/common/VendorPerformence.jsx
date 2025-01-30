@@ -81,7 +81,7 @@ function VendorPerformance({ performance }) {
                     backgroundColor:"#114f11"
                   }}
                 >
-                  <RiFileExcel2Line size={30} />
+                  <RiFileExcel2Line size={20} />
                 </button> 
          </div>
         }
