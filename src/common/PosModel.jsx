@@ -33,7 +33,6 @@ const POsModal = ({ show, handleClose, posTitle, loading, posData }) => {
 
   return (
     <Modal show={show} onHide={handleClose} size="xl" centered dialogClassName="custom-modal-width">
-      <Modal.Header closeButton></Modal.Header>
       <Modal.Body style={{ maxHeight: "600px", overflow: "hidden", display: "flex", flexDirection: "column" }}>
         {loading ? (
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}>
@@ -41,34 +40,54 @@ const POsModal = ({ show, handleClose, posTitle, loading, posData }) => {
           </div>
         ) : (
           <div style={{ flexGrow: 1, overflow: "hidden" }}>
-            <DataTable
-              title={
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <a style={{ fontSize: "18px", fontWeight: "bold" }}>{posTitle}</a>
-                  <button
-                    onClick={handleDownloadExcel}
-                    disabled={loading}
-                    style={{
-                      color: "white",
-                      border: "none",
-                      cursor: loading ? "not-allowed" : "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      backgroundColor: "#114f11",
-                    }}
-                  >
-                    <RiFileExcel2Line size={20} />
-                  </button>
-                </div>
-              }
-              columns={columns}
-              data={posData || []}
-              pagination
-              highlightOnHover
-              customStyles={customStyles}
-              fixedHeader
-              fixedHeaderScrollHeight="450px" // Ensures table scrolls inside modal
-            />
+          <DataTable
+  title={
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+      <span style={{ fontSize: "18px", fontWeight: "bold" }}>{posTitle}</span>
+
+      <div style={{ display: "flex", gap: "10px" }}> 
+        <button
+          onClick={handleDownloadExcel}
+          disabled={loading}
+          style={{
+            color: "white",
+            border: "none",
+            cursor: loading ? "not-allowed" : "pointer",
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "#114f11",
+            padding: "5px 10px",
+            borderRadius: "11px"
+          }}
+        >
+          <RiFileExcel2Line  size={20} />
+        </button>
+
+        {/* Close Button */}
+        <button
+          onClick={handleClose}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "20px",
+            color: "#000",
+          }}
+        >
+          ✖
+        </button>
+      </div>
+    </div>
+  }
+  columns={columns}
+  data={posData || []}
+  pagination
+  highlightOnHover
+  customStyles={customStyles}
+  fixedHeader
+  fixedHeaderScrollHeight="450px"
+/>
+
           </div>
         )}
       </Modal.Body>
