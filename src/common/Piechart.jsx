@@ -34,7 +34,20 @@ const Piechart = ({ categoryData }) => {
       acc[index] = { offset: 0.1 }; // Adjust explosion distance
       return acc;
     }, {}),
+    fontSize: 10, // Set global font size
+    legend: {
+      textStyle: {
+        fontSize: 12, // Adjust legend font size
+      },
+    },
+    pieSliceTextStyle: {
+      fontSize: 12, // Adjust slice text font size
+    },
+    titleTextStyle: {
+      fontSize: 12, // Adjust title font size (if needed)
+    },
   };
+  
 
   // Handle click event to explode the slice
   const handleClick = (chartWrapper) => {

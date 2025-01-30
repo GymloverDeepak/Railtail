@@ -67,21 +67,21 @@ const POsModal = ({ show, handleClose, posTitle,loading,posData}) => {
   
   return (
     <Modal
-      show={show}
-      onHide={handleClose}
-      size="xl" // Extra large for 80% width
-      centered // Center the modal
-      dialogClassName="custom-modal-width"
-    >
-      <Modal.Header closeButton>
-      </Modal.Header>
-      <Modal.Body>
+    show={show}
+    onHide={handleClose}
+    size="xl" // Extra large for fixed width
+    centered
+    dialogClassName="custom-modal-width"
+  >
+    <Modal.Header closeButton></Modal.Header>
+    <Modal.Body style={{ maxHeight: "500px", overflowY: "auto" }}> 
       {loading ? (
-          // Show Spinner when loading
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}>
-            <Spinner animation="border" variant="primary" />
-          </div>
-        ) : (
+        // Show Spinner when loading
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}>
+          <Spinner animation="border" variant="primary" />
+        </div>
+      ) : (
+        <div style={{ maxHeight: "450px", overflowY: "auto" }}> 
           <DataTable
             title={
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -95,29 +95,29 @@ const POsModal = ({ show, handleClose, posTitle,loading,posData}) => {
                     cursor: loading ? "not-allowed" : "pointer",
                     display: "flex",
                     alignItems: "center",
-                    backgroundColor:"#114f11"
+                    backgroundColor: "#114f11",
                   }}
                 >
-                <RiFileExcel2Line size={20} />
-                   {/* <img src={excelLogo} alt="Excel" width="50px" height="50px" /> */}
+                  <RiFileExcel2Line size={20} />
                 </button>
               </div>
             }
             columns={columns}
             data={posData || []}
             pagination
-            paginationPerPage={5}
+            paginationPerPage={5} // Keep pagination but limit per page
             highlightOnHover
             customStyles={customStyles}
+            fixedHeader
+            fixedHeaderScrollHeight="400px" // Set the height to enable scrolling
           />
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
+        </div>
+      )}
+    </Modal.Body>
+    <Modal.Footer>
+    </Modal.Footer>
+  </Modal>
+  
   );
 };
 
