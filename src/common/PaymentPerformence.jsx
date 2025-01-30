@@ -1,8 +1,8 @@
 import React from 'react'
 import DataTable from "react-data-table-component";
 import * as XLSX from "xlsx";
-// import { RiFileExcel2Line } from "react-icons/ri";
-import excelLogo from "../assets/img/excelLogo.png";
+import { RiFileExcel2Line } from "react-icons/ri";
+// import excelLogo from "../assets/img/excelLogo.png";
 function PaymentPerformence({payment}) {
   const columns3 = [
     {
@@ -79,9 +79,11 @@ function PaymentPerformence({payment}) {
                     border: "none",
                     display: "flex",
                     alignItems: "center",
+                    backgroundColor:"#114f11"
                   }}
                 >
-                  <img src={excelLogo} alt="Excel" width="50px" height="50px" />
+                  {/* <img src={excelLogo} alt="Excel" width="50px" height="50px" /> */}
+                  <RiFileExcel2Line size={30} />
                 </button>
           </div>
         }
