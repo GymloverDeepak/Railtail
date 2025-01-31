@@ -416,10 +416,10 @@ function Dashboard({ startDate, endDate }) {
             <div
               className="card"
               style={{
-                width: "33%",
+                width: "33.3%",
                 height: "50px", // Reduced height
                 backgroundColor: "#5D76A9",
-                margin: "10px",
+                margin: "10px 0",
               }}
             >
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
@@ -453,10 +453,10 @@ function Dashboard({ startDate, endDate }) {
             <div
               className="card "
               style={{
-                width: "33%",
+                width: "33.3%",
                 height: "50px", // Reduced height
                 backgroundColor: "#5D76A9",
-                margin: "10px",
+                margin: "10px 0",
               }}
             >
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>Po Status</h4> */}
@@ -485,10 +485,10 @@ function Dashboard({ startDate, endDate }) {
             <div
               className="card"
               style={{
-                width: "33%",
+                width: "33.3%",
                 height: "50px", // Reduced height
                 backgroundColor: "#5D76A9",
-                margin: "10px",
+                margin: "10px 0",
               }}
             >
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>
