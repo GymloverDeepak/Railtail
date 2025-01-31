@@ -165,7 +165,7 @@ function Header() {
               style={{ width: "150px" }}
             />
            <button
-              className="btn btn-primary"
+              className=""
               type="button"
               id="ask_buddy"
               onClick={() => setShowBot(!showBot)}
@@ -176,7 +176,7 @@ function Header() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                borderRadius: "50%", 
+                borderRadius: "20%", 
                 marginRight: "8px",
               }}
             >
