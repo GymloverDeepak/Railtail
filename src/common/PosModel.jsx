@@ -1,8 +1,9 @@
 import React from "react";
-import { Modal, Button, Spinner } from "react-bootstrap";
+import { Modal, Spinner } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import * as XLSX from "xlsx";
 import { RiFileExcel2Line } from "react-icons/ri";
+import ContentLoader from "react-content-loader"; // Import content loader
 
 const POsModal = ({ show, handleClose, posTitle, loading, posData }) => {
   const columns = [
@@ -15,12 +16,7 @@ const POsModal = ({ show, handleClose, posTitle, loading, posData }) => {
   ];
 
   const customStyles = {
-    header: {
-      style: {
-        color: "#012970",
-        fontSize: "17px",
-      },
-    },
+    header: { style: { color: "#012970", fontSize: "17px" } },
   };
 
   const handleDownloadExcel = () => {
@@ -31,65 +27,75 @@ const POsModal = ({ show, handleClose, posTitle, loading, posData }) => {
     XLSX.writeFile(wb, `${posTitle}.xlsx`);
   };
 
+  // Skeleton loader for table rows
+  const PlaceholderLoader = () => (
+    <ContentLoader
+      speed={2}
+      width="100%"
+      height={160}
+      viewBox="0 0 100% 160"
+      backgroundColor="#f3f3f3"
+      foregroundColor="#ecebeb"
+    >
+      {[...Array(5)].map((_, i) => (
+        <rect key={i} x="0" y={i * 30} rx="5" ry="5" width="100%" height="20" />
+      ))}
+    </ContentLoader>
+  );
+
   return (
     <Modal show={show} onHide={handleClose} size="xl" centered dialogClassName="custom-modal-width">
       <Modal.Body style={{ maxHeight: "600px", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-        {loading ? (
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}>
-            <Spinner animation="border" variant="primary" />
-          </div>
-        ) : (
-          <div style={{ flexGrow: 1, overflow: "hidden" }}>
+        <div style={{ flexGrow: 1, overflow: "hidden" }}>
           <DataTable
-  title={
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-      <span style={{ fontSize: "18px", fontWeight: "bold" }}>{posTitle}</span>
+            title={
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+                <span style={{ fontSize: "18px", fontWeight: "bold" }}>{posTitle}</span>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button
+                    onClick={handleDownloadExcel}
+                    disabled={loading}
+                    style={{
+                      color: "white",
+                      border: "none",
+                      cursor: loading ? "not-allowed" : "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      backgroundColor: "#114f11",
+                      padding: "5px 10px",
+                      borderRadius: "11px",
+                    }}
+                  >
+                    <RiFileExcel2Line size={20} />
+                  </button>
 
-      <div style={{ display: "flex", gap: "10px" }}> 
-        <button
-          onClick={handleDownloadExcel}
-          disabled={loading}
-          style={{
-            color: "white",
-            border: "none",
-            cursor: loading ? "not-allowed" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            backgroundColor: "#114f11",
-            padding: "5px 10px",
-            borderRadius: "11px"
-          }}
-        >
-          <RiFileExcel2Line  size={20} />
-        </button>
-
-        {/* Close Button */}
-        <button
-          onClick={handleClose}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: "20px",
-            color: "#000",
-          }}
-        >
-          ✖
-        </button>
-      </div>
-    </div>
-  }
-  columns={columns}
-  data={posData || []}
-  pagination
-  highlightOnHover
-  customStyles={customStyles}
-  fixedHeader
-  fixedHeaderScrollHeight="450px"
-/>
-
-          </div>
-        )}
+                  {/* Close Button */}
+                  <button
+                    onClick={handleClose}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: "20px",
+                      color: "#000",
+                    }}
+                  >
+                    ✖
+                  </button>
+                </div>
+              </div>
+            }
+            columns={columns}
+            data={loading ? [] : posData || []} // Show empty data when loading
+            pagination
+            highlightOnHover
+            customStyles={customStyles}
+            fixedHeader
+            fixedHeaderScrollHeight="450px"
+            progressPending={loading} // Shows loading effect inside DataTable
+            progressComponent={<PlaceholderLoader />} // Custom skeleton loader
+          />
+        </div>
       </Modal.Body>
     </Modal>
   );
