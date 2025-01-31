@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Profile from "../assets/img/profile-img.jpg";
 import logo from "../assets/img/logo.png";
+import communications from "../assets/img/communications.png";
 import Dashboard from "./Dashboard";
 import axios from "axios";
 import Modal from "./Modal";
@@ -163,15 +164,33 @@ function Header() {
               onChange={handleEndDateChange}
               style={{ width: "150px" }}
             />
-            <button
+           <button
               className="btn btn-primary"
               type="button"
               id="ask_buddy"
               onClick={() => setShowBot(!showBot)}
-              style={{ height: "38px", width: "130px",marginRight: "9px" }}
+              style={{
+                height: "38px",
+                width: "38px", /* Make width equal to height for a circular button */
+                padding: "0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "50%", 
+                marginRight: "8px",
+              }}
             >
-              My Assistant
+              <img
+                src={communications}
+                alt="Assistant Icon"
+                style={{
+                  width: "100%", /* Adjust size to fit the button */
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+              />
             </button>
+
           </div>
         </div>
       </header>

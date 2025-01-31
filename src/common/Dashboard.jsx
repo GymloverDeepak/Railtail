@@ -418,14 +418,14 @@ function Dashboard({ startDate, endDate }) {
               style={{
                 width: "33%",
                 height: "50px", // Reduced height
-                backgroundColor: "#E0FFFF",
+                backgroundColor: "#5D76A9",
                 margin: "10px",
               }}
             >
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}> Po-Type</h4> */}
               <div className="d-flex">
                 <div  className="section2">
-                  <h5 className="tabhead3" style={{textDecoration: "underline"}}
+                  <h5 className="tabhead3"
                    onClick={() => posHandler("Blanket-Release POs","get-po-type-data?po_type=BLANKET_RELEASE&")}>
                     Blanket-Release POs
                   </h5>
@@ -441,7 +441,7 @@ function Dashboard({ startDate, endDate }) {
                     borderLeft: "1px solid #ddd",
                   }}
                 >
-                  <h5 className="tabhead3" style={{textDecoration: "underline"}}  onClick={()=>posHandler("Standard POs","get-po-type-data?po_type=STANDARD&")}>
+                  <h5 className="tabhead3"  onClick={()=>posHandler("Standard POs","get-po-type-data?po_type=STANDARD&")}>
                     Standard POs
                   </h5>
                   <p className="tabData1">
@@ -455,14 +455,14 @@ function Dashboard({ startDate, endDate }) {
               style={{
                 width: "33%",
                 height: "50px", // Reduced height
-                backgroundColor: "#E0FFFF",
+                backgroundColor: "#5D76A9",
                 margin: "10px",
               }}
             >
               {/* <h4 style={{ fontSize: "20px", marginBottom: "6px",textAlign:"center" }}>Po Status</h4> */}
               <div className="d-flex">
                 <div  className="section2">
-                <h5 className="tabhead3"  style={{textDecoration: "underline"}} onClick={()=>posHandler("Open POs","get-po-status-data?po_status=OPEN&")}>
+                <h5 className="tabhead3" onClick={()=>posHandler("Open POs","get-po-status-data?po_status=OPEN&")}>
                     Open POs
                   </h5>
                   <p className="tabData1">
@@ -472,7 +472,7 @@ function Dashboard({ startDate, endDate }) {
                 <div
                  className="section2"
                 >
-                  <h5 className="tabhead3"  style={{textDecoration: "underline"}} onClick={()=>posHandler(" Closed POs","get-po-status-data?po_status=CLOSE&")}>
+                  <h5 className="tabhead3" onClick={()=>posHandler(" Closed POs","get-po-status-data?po_status=CLOSE&")}>
                     Closed POs
                   </h5>
                   <p className="tabData1">
@@ -487,7 +487,7 @@ function Dashboard({ startDate, endDate }) {
               style={{
                 width: "33%",
                 height: "50px", // Reduced height
-                backgroundColor: "#E0FFFF",
+                backgroundColor: "#5D76A9",
                 margin: "10px",
               }}
             >
@@ -496,7 +496,7 @@ function Dashboard({ startDate, endDate }) {
             </h4> */}
               <div className="d-flex">
                 <div  className="section2">
-                <h5 className="tabhead3" style={{textDecoration: "underline"}} onClick={()=>posHandler("On-time PO Line Items","get-po-data?status=ontime&")}>
+                <h5 className="tabhead3" onClick={()=>posHandler("On-time PO Line Items","get-po-data?status=ontime&")}>
                     On-time PO Line Items
                   </h5>
                   <p className="tabData1">
@@ -506,7 +506,7 @@ function Dashboard({ startDate, endDate }) {
                 <div
                  className="section2"
                 >
-                 <h5 className="tabhead3" style={{textDecoration: "underline"}} onClick={()=>posHandler("Delayed PO Line Items","get-po-data?status=delayed&")}>
+                 <h5 className="tabhead3" onClick={()=>posHandler("Delayed PO Line Items","get-po-data?status=delayed&")}>
                     Delayed PO Line Items
                   </h5>
                   <p className="tabData1">
