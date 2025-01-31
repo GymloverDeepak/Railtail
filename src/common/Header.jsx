@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Profile from "../assets/img/profile-img.jpg";
 import logo from "../assets/img/logo.png";
+import railtel from "../assets/img/railtel.png";
 import communications from "../assets/img/communications.png";
 import Dashboard from "./Dashboard";
 import axios from "axios";
@@ -62,7 +63,7 @@ function Header() {
       >
         <div className="topbar">
           <div className="d-flex align-items-center justify-content-between">
-            <img src={logo} alt="" style={{height:"62px",width:"81px",borderRadius:"2px"}} />
+            <img src={railtel} alt="" style={{height:"62px",width:"81px",borderRadius:"2px"}} />
           </div>
 
           {/* <nav className="header-nav ms-auto">
