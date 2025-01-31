@@ -63,7 +63,8 @@ function Header() {
       >
         <div className="topbar">
           <div className="d-flex align-items-center justify-content-between">
-            <img src={railtel} alt="" style={{height:"62px",width:"81px",borderRadius:"2px"}} />
+            <img src={logo} alt="" style={{height:"60px",width:"120px",borderRadius:"2px"}} />
+            {/* <img src={railtel} alt="" style={{height:"62px",width:"81px",borderRadius:"2px"}} /> */}
           </div>
 
           {/* <nav className="header-nav ms-auto">
