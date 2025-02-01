@@ -44,3 +44,16 @@ margin-Top: 4rem;
   padding: 1px;
   border-left: 1px solid rgb(221, 221, 221);
 }
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute; /* Position it absolutely */
+  top: 80%; /* Center it vertically */
+  left: 95%; /* Center it horizontally */
+  transform: translate(-50%, -50%); /* Adjust for exact center */
+  width: 100%;
+  height: 100%;
+  z-index: 999; /* Ensure it appears above other elements */
+}
+

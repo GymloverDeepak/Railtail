@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Chat.css";
 import axios from "axios";
-import SpinnerLoader from "./SpinnerLoader";
+import Lottie from "lottie-react";
+import loadingAnimation from "../assets/loading.json"; // Add a Lottie JSON file for animation
 
 function Modal({ isOpen, onClose, id = "" }) {
   const envAPI_URL = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(true);
   const [task, setTask] = useState("");
   const [botChat, setBotChat] = useState([{ type: "", text: "" }]);
 
   const suggestions = [
-    "count of vendors",
-    "Provide summary about the data in 100 words",
-    "Name of top vendor",
-    "Highest value Tender no",
+    "Count of vendors",
+    "Provide a summary about the data in 100 words",
+    "Name of the top vendor",
+    "Highest value Tender No",
     "Highest value PO",
   ];
 
@@ -66,25 +66,14 @@ function Modal({ isOpen, onClose, id = "" }) {
 
   return (
     isOpen && (
-      <div
-        className="modal modal-show"
-        style={{ width: "100%" }}
-        id={id}
-        tabIndex="-1"
-        role="dialog"
-        aria-hidden={!isOpen}
-      >
+      <div className="modal modal-show" style={{ width: "100%" }} id={id} tabIndex="-1" role="dialog">
         <div className="modal-dialog modal-fullscreen">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title bot-title" style={{ fontSize: "20px" }}>
                 My Assistant
               </h5>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => onClose(!isOpen)}
-              >
+              <button type="button" className="btn btn-secondary" onClick={() => onClose(!isOpen)}>
                 Close
               </button>
             </div>
@@ -103,18 +92,27 @@ function Modal({ isOpen, onClose, id = "" }) {
               ))}
             </div>
 
-            {showSuggestions && (
-              <div className="suggestions-container">
-                {suggestions.map((suggestion, index) => (
-                  <div key={index} className="suggestion-item" onClick={() => handleSuggestionClick(suggestion)}>
-                    {suggestion}
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* Suggestions */}
+            <div className="suggestions-container">
+              {suggestions.map((suggestion, index) => (
+                <div key={index} className="suggestion-item" onClick={() => handleSuggestionClick(suggestion)}>
+                  {suggestion}
+                </div>
+              ))}
+            </div>
 
-            {/* Loading spinner */}
-            {loading && <SpinnerLoader />}
+            {/* New Animated Loading */}
+            {loading && (
+  <div className="loading-container">
+    <Lottie 
+      animationData={loadingAnimation} 
+      loop={true} 
+      style={{ width: "100px", height: "100px" }} 
+    />
+  </div>
+)}
+
+
 
             <div className="modal-footer chat-footer">
               <input
