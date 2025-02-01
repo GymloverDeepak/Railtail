@@ -95,7 +95,7 @@ function Modal({ isOpen, onClose, id = "" }) {
             {/* Suggestions */}
             <div className="suggestions-container">
               {suggestions.map((suggestion, index) => (
-                <div key={index} className="suggestion-item" onClick={() => handleSuggestionClick(suggestion)}>
+                <div key={index} className="suggestion-item" style={{backgroundColor:"#5D76A9",color:"white"}} onClick={() => handleSuggestionClick(suggestion)}>
                   {suggestion}
                 </div>
               ))}
@@ -107,7 +107,11 @@ function Modal({ isOpen, onClose, id = "" }) {
     <Lottie 
       animationData={loadingAnimation} 
       loop={true} 
-      style={{ width: "100px", height: "100px" }} 
+      style={{ width: "100px", height: "100px" }}
+      renderSettings={{
+        // Change stroke or fill color if applicable
+        fillColor: "#FF5733", // Customize color here
+      }}
     />
   </div>
 )}
