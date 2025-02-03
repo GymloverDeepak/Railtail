@@ -1,17 +1,26 @@
 .modal-show {
-    display: block;
-    overflow: auto; /* Allows scrolling */
-  }
-  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Prevents background scroll */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Dimmed background */
+    z-index: 9999; /* Ensures modal appears above everything */
+}
+
 .chat-container {
     flex-grow: 1;
     overflow-y: auto;
-    /* Enables scrolling for long chat history */
     padding: 10px;
     background-color: #f8f9fa;
     display: flex;
     flex-direction: column;
-    scrollbar-width: none !important; 
+    scrollbar-width: none !important;
+    max-height: 65vh; /* Restrict height for better scrolling */
 }
 
 .chat-bubble {
@@ -54,6 +63,7 @@
     border-left-color: #d1e7dd;
 }
 
+/* Chat Footer */
 .chat-footer {
     display: flex;
     gap: 10px;
@@ -67,6 +77,8 @@
     border: 1px solid #ccc;
     border-radius: 20px;
     padding: 10px;
+    outline: none;
+    font-size: 14px;
 }
 
 .chat-footer button {
@@ -81,38 +93,59 @@
     justify-content: center;
     font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .chat-footer button:hover {
     background-color: #023386;
 }
 
+/* Modal Title */
 .bot-title {
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 700;
     color: #012970;
     font-family: "Nunito", sans-serif;
 }
 
-
-  .suggestions-container {
+/* Suggestions Section */
+.suggestions-container {
     margin-top: 10px;
-    margin-left: 300px; /* Add spacing between chat bubbles and suggestions */
     display: flex;
-    flex-wrap: wrap; /* Allow suggestions to wrap onto the next line */
-    gap: 8px; /* Space between each suggestion bubble */
-  }
-  
-  .suggestion-item {
-    background-color: #e7f3ff;
-    color: #0056b3;
-    padding: 8px 12px; /* Padding for clickable area */
-    border-radius: 16px; /* Rounded corners for suggestion bubbles */
-    cursor: pointer; /* Change cursor to pointer */
-    transition: background-color 0.3s ease; /* Smooth hover effect */
-    font-size: 14px; /* Match the chat text size */
-  }
-  
-  .suggestion-item:hover {
-    background-color: #e0e0e0; /* Change background on hover */
-  }
+    justify-content: center; /* Centering Suggestions */
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+}
+
+.suggestion-item {
+    background-color: #5D76A9;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+    text-align: center;
+}
+
+.suggestion-item:hover {
+    background-color: #4c6698;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .chat-container {
+        max-height: 55vh;
+    }
+
+    .suggestions-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .suggestion-item {
+        width: 90%;
+        text-align: center;
+    }
+}
