@@ -5,7 +5,7 @@ import * as XLSX from "xlsx";
 import { RiFileExcel2Line } from "react-icons/ri";
 import ContentLoader from "react-content-loader"; // Import content loader
 
-const POsModal = ({ show, handleClose, posTitle, loading, posData }) => {
+const POsModal = ({ show, handleClose, posTitle, loading, posData, startDate, endDate }) => {
   const columns = [
     { name: "Buyer Name", selector: (row) => row.Buyer_Name || "No Vendor Name", sortable: true, width: "350px" },
     { name: "Buyer Dept", selector: (row) => row.Buyer_Dept || "N/A", sortable: true },
@@ -51,7 +51,37 @@ const POsModal = ({ show, handleClose, posTitle, loading, posData }) => {
             title={
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
                 <span style={{ fontSize: "18px", fontWeight: "bold" }}>{posTitle}</span>
+                
                 <div style={{ display: "flex", gap: "10px" }}>
+                <label
+              htmlFor="startDate"
+              className="form-label me-2"
+            >
+              From
+            </label>
+            <input
+                type="date"
+                id="startDate"
+                className="form-control me-3"
+                value={startDate}// Optionally, also trigger on click
+                style={{ width: "150px" }}
+                disabled={true}
+              />
+
+            <label
+              htmlFor="endDate"
+              className="form-label me-2"
+            >
+              To
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              className="form-control me-3"
+              value={endDate}
+              disabled={true}
+              style={{ width: "150px" }}
+            />
                   <button
                     onClick={handleDownloadExcel}
                     disabled={loading}
@@ -66,6 +96,7 @@ const POsModal = ({ show, handleClose, posTitle, loading, posData }) => {
                       borderRadius: "11px",
                     }}
                   >
+             
                     <RiFileExcel2Line size={20} />
                   </button>
 

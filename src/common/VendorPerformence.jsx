@@ -3,7 +3,7 @@ import DataTable from "react-data-table-component";
 import * as XLSX from "xlsx";
 import { RiFileExcel2Line } from "react-icons/ri";
 // import excelLogo from "../assets/img/excelLogo.png";
-function VendorPerformance({ performance }) {
+function VendorPerformance({ performance}) {
   const columns = [
     {
       name: "Vendor Name",

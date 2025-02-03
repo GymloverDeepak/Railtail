@@ -519,6 +519,8 @@ function Dashboard({ startDate, endDate }) {
         </div>
             <POsModal
             show={showModal}
+            startDate={startDate}
+            endDate={endDate}
             handleClose={() => setShowModal(false)}
             posTitle={posTitle}
             loading={loading}
@@ -592,13 +594,13 @@ function Dashboard({ startDate, endDate }) {
           </div>
         </div>
         <div className="card mb-1" style={{ marginTop: "-22px" }}>
-      <VendorPerformence performance={performance}/>
+      <VendorPerformence performance={performance} />
         </div>
         <div className="card mb-1">
-       <DelayedPos noData={noData}/>
+       <DelayedPos noData={noData} />
         </div>
         <div className="card mb-1">
-      <PaymentPerformence payment={payment}/>
+      <PaymentPerformence payment={payment} />
         </div>
       </div>
     </main>
