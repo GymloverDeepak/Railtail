@@ -82,6 +82,7 @@ function PaymentPerformence({payment}) {
                     backgroundColor:"#114f11",
                     borderRadius: "5px"
                   }}
+                  hidden={payment.length === 0}
                 >
                   {/* <img src={excelLogo} alt="Excel" width="50px" height="50px" /> */}
                   <RiFileExcel2Line size={20} />

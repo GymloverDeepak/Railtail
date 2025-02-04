@@ -84,7 +84,6 @@ const POsModal = ({ show, handleClose, posTitle, loading, posData, startDate, en
             />
                   <button
                     onClick={handleDownloadExcel}
-                    disabled={loading}
                     style={{
                       color: "white",
                       border: "none",
@@ -95,6 +94,7 @@ const POsModal = ({ show, handleClose, posTitle, loading, posData, startDate, en
                       padding: "5px 10px",
                       borderRadius: "11px",
                     }}
+                    hidden={posData.length === 0}
                   >
              
                     <RiFileExcel2Line size={20} />

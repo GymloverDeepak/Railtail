@@ -107,8 +107,12 @@ function Modal({ isOpen, onClose, id = "" }) {
               {/* Suggestions */}
               <div className="suggestions-container">
                 {suggestions.map((suggestion, index) => (
-                  <div key={index} className="suggestion-item" style={{ backgroundColor: "#5D76A9", color: "white" }} onClick={() => handleSuggestionClick(suggestion)}>
+                  <div key={index} className="suggestion-item" 
+                  disabled={loading}
+                  style={{ backgroundColor: "#5D76A9", color: "white" }}
+                   onClick={() => handleSuggestionClick(suggestion)}>
                     {suggestion}
+                    
                   </div>
                 ))}
               </div>
@@ -125,6 +129,7 @@ function Modal({ isOpen, onClose, id = "" }) {
                   type="text"
                   placeholder="Type a message..."
                   value={task}
+                  disabled={loading}
                   onChange={(e) => setTask(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -133,7 +138,7 @@ function Modal({ isOpen, onClose, id = "" }) {
                     }
                   }}
                 />
-                <button type="button" onClick={handleSend}>
+                <button type="button" disabled={loading} onClick={handleSend}>
                   <i className="bi bi-send"></i>
                 </button>
               </div>

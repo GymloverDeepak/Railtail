@@ -81,6 +81,7 @@ function VendorPerformance({ performance}) {
                     backgroundColor:"#114f11",
                     borderRadius: "5px"
                   }}
+                  hidden={performance.length === 0}
                 >
                   <RiFileExcel2Line size={20} />
                 </button> 
