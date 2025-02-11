@@ -14,7 +14,7 @@ function Modal({ isOpen, onClose, id = "" }) {
     "Count of vendors",
     "Provide a summary about the data in 100 words",
     "Name of the top vendor",
-    "Highest value Tender No",
+    "POs issued in last month",
     "Highest value PO",
   ];
 
